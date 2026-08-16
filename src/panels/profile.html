@@ -35,7 +35,7 @@
             <div class="top-bar-left">
                 <div class="brand-badge">DE</div>
                 <div class="brand-titles">
-                    <span class="top-bar-title">DESTINEVENT</span>
+                    <span class="top-bar-title">DESTIN EVENT</span>
                     <span class="top-bar-subtitle">ESPACE JOUEUR</span>
                 </div>
             </div>
@@ -47,81 +47,81 @@
             </div>
         </header>
 
-        <!-- ── GRANDE CARTE DÉDIÉE "ESPACE JOUEUR" (EXACTEMENT COMME LA CAPTURE) ── -->
-        <div class="espace-joueur-main-card">
+        <!-- ── ESPACE REDIMENSIONNÉ POUR CENTRER / DESCENDRE ── -->
+        <div class="profile-center-wrapper">
 
-            <!-- PARTIE HAUTE : AVATAR, PSEUDO, ROLES & DOSSARD -->
-            <div class="player-card-top">
+            <!-- BANNIÈRE HÉRO PROFILE -->
+            <div class="espace-joueur-hero-card">
+                <div class="hero-corner hero-corner-tl"></div>
+                <div class="hero-corner hero-corner-br"></div>
+                <div class="hero-scanlines"></div>
 
-                <div class="player-identity-group">
+                <div class="player-profile-main">
                     <div class="player-avatar-glow-box">
                         <div class="player-head profile-player-head"></div>
+                        <div class="avatar-ring"></div>
                     </div>
 
-                    <div class="player-identity-text">
-                        <div class="card-subtitle-tag">ESPACE JOUEUR</div>
-                        <h1 class="profile-pseudo-display">GimoveTTv</h1>
-                        <div class="player-role-badges">
-                            <span class="role-badge badge-role-joueur">
-                                <span class="badge-icon">&#128100;</span> Joueur
-                            </span>
-                            <span class="role-badge badge-status-offline">
-                                <span class="badge-dot-gray">•</span> Hors jeu
-                            </span>
+                    <div class="player-identity-details">
+                        <div class="player-subtitle">ESPACE JOUEUR • DESTIN EVENT</div>
+                        <h1 class="profile-pseudo-display">Chargement...</h1>
+                        <div class="player-status-tags">
+                            <span class="role-tag tag-role">SURVIVANT</span>
+                            <span class="role-tag tag-session">• HORS JEU</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- BLOC DOSSARD (EN HAUT À DROITE) -->
-                <div class="dossard-box">
-                    <div class="dossard-label">DOSSARD</div>
-                    <div class="dossard-number">043</div>
+            <!-- 3 CARDS STATS PRO (VIES, STATUT SURVIVANT, ACCÈS SERVEUR) -->
+            <div class="player-stats-grid">
+
+                <!-- Stat 1 : Vies Restantes -->
+                <div class="player-stat-card card-vies">
+                    <div class="stat-card-header">
+                        <span class="stat-card-icon heart-glow">&#10084;</span>
+                        <span class="stat-card-title">VIES RESTANTES</span>
+                    </div>
+                    <div class="stat-card-value text-red">0</div>
+                    <div class="stat-card-sub">Nombre de vies en jeu</div>
+                </div>
+
+                <!-- Stat 2 : Statut du Joueur -->
+                <div class="player-stat-card card-statut">
+                    <div class="stat-card-header">
+                        <span class="stat-card-icon shield-glow">&#128737;</span>
+                        <span class="stat-card-title">STATUT SURVIVANT</span>
+                    </div>
+                    <div class="stat-card-value text-green">En vie</div>
+                    <div class="stat-card-sub">État actuel du personnage</div>
+                </div>
+
+                <!-- Stat 3 : Accès au Serveur (Autorisé / En attente) -->
+                <div class="player-stat-card card-acces">
+                    <div class="stat-card-header">
+                        <span class="stat-card-icon key-glow">&#128273;</span>
+                        <span class="stat-card-title">ACCÈS SERVEUR</span>
+                    </div>
+                    <div class="stat-card-value access-status-text-profile text-yellow">En attente</div>
+                    <div class="stat-card-sub">Statut Whitelist</div>
                 </div>
 
             </div>
 
-            <!-- PARTIE BASSE : 4 STAT CARDS CÔTE À CÔTE -->
-            <div class="player-stats-row">
-
-                <!-- Stat 1 : VIES -->
-                <div class="stat-card stat-vies">
-                    <div class="stat-icon-wrapper heart-icon">&#10084;</div>
-                    <div class="stat-info">
-                        <div class="stat-label">VIES</div>
-                        <div class="stat-value text-red">0</div>
+            <!-- CARD COMPTE (PSEUDO EN JEU EXCLUSIVEMENT) -->
+            <div class="account-details-panel">
+                <div class="details-panel-header">
+                    <span class="details-panel-title">COMPTE MINECRAFT CONNECTÉ</span>
+                </div>
+                <div class="details-single-row">
+                    <div class="detail-item single-pseudo-item">
+                        <span class="detail-label">PSEUDO EN JEU</span>
+                        <span class="detail-val profile-pseudo-display">Chargement...</span>
                     </div>
                 </div>
-
-                <!-- Stat 2 : STATUT -->
-                <div class="stat-card stat-statut">
-                    <div class="stat-icon-wrapper shield-icon">&#128737;</div>
-                    <div class="stat-info">
-                        <div class="stat-label">STATUT</div>
-                        <div class="stat-value text-green">En vie</div>
-                    </div>
-                </div>
-
-                <!-- Stat 3 : ACCÈS SERVEUR (AUTORISÉ / EN ATTENTE) -->
-                <div class="stat-card stat-acces">
-                    <div class="stat-icon-wrapper access-icon">&#128683;</div>
-                    <div class="stat-info">
-                        <div class="stat-label">ACCÈS SERVEUR</div>
-                        <div class="stat-value text-yellow access-status-text-profile">En attente</div>
-                    </div>
-                </div>
-
-                <!-- Stat 4 : CLASSE -->
-                <div class="stat-card stat-classe">
-                    <div class="stat-icon-wrapper tag-icon">&#127991;</div>
-                    <div class="stat-info">
-                        <div class="stat-label">CLASSE</div>
-                        <div class="stat-value text-green">default</div>
-                    </div>
-                </div>
-
             </div>
 
-        </div><!-- /espace-joueur-main-card -->
+        </div><!-- /profile-center-wrapper -->
 
     </div><!-- /main-content -->
 

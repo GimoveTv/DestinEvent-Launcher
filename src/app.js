@@ -29,39 +29,88 @@ Store.initRenderer();
 
 if (!app.requestSingleInstanceLock()) app.quit();
 else app.whenReady().then(() => {
-    if (dev) return MainWindow.createWindow()
-    UpdateWindow.createWindow()
+    UpdateWindow.createWindow();
 });
 
-ipcMain.on('main-window-open', () => MainWindow.createWindow())
-ipcMain.on('main-window-dev-tools', () => MainWindow.getWindow().webContents.openDevTools({ mode: 'detach' }))
-ipcMain.on('main-window-dev-tools-close', () => MainWindow.getWindow().webContents.closeDevTools())
-ipcMain.on('main-window-close', () => MainWindow.destroyWindow())
-ipcMain.on('main-window-reload', () => MainWindow.getWindow().reload())
-ipcMain.on('main-window-progress', (event, options) => MainWindow.getWindow().setProgressBar(options.progress / options.size))
-ipcMain.on('main-window-progress-reset', () => MainWindow.getWindow().setProgressBar(-1))
-ipcMain.on('main-window-progress-load', () => MainWindow.getWindow().setProgressBar(2))
-ipcMain.on('main-window-minimize', () => MainWindow.getWindow().minimize())
+ipcMain.on('main-window-open', () => {
+    let win = MainWindow.getWindow();
+    if (win && !win.isDestroyed()) {
+        win.show();
+        win.focus();
+    } else {
+        MainWindow.createWindow();
+    }
+});
+ipcMain.on('main-window-dev-tools', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.webContents.openDevTools({ mode: 'detach' });
+});
+ipcMain.on('main-window-dev-tools-close', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.webContents.closeDevTools();
+});
+ipcMain.on('main-window-close', () => MainWindow.destroyWindow());
+ipcMain.on('main-window-reload', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.reload();
+});
+ipcMain.on('main-window-progress', (event, options) => {
+    let win = MainWindow.getWindow();
+    if (win && options && options.size) win.setProgressBar(options.progress / options.size);
+});
+ipcMain.on('main-window-progress-reset', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.setProgressBar(-1);
+});
+ipcMain.on('main-window-progress-load', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.setProgressBar(2);
+});
+ipcMain.on('main-window-minimize', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.minimize();
+});
 
-ipcMain.on('update-window-close', () => UpdateWindow.destroyWindow())
-ipcMain.on('update-window-dev-tools', () => UpdateWindow.getWindow().webContents.openDevTools({ mode: 'detach' }))
-ipcMain.on('update-window-progress', (event, options) => UpdateWindow.getWindow().setProgressBar(options.progress / options.size))
-ipcMain.on('update-window-progress-reset', () => UpdateWindow.getWindow().setProgressBar(-1))
-ipcMain.on('update-window-progress-load', () => UpdateWindow.getWindow().setProgressBar(2))
+ipcMain.on('update-window-close', () => UpdateWindow.destroyWindow());
+ipcMain.on('update-window-dev-tools', () => {
+    let win = UpdateWindow.getWindow();
+    if (win) win.webContents.openDevTools({ mode: 'detach' });
+});
+ipcMain.on('update-window-progress', (event, options) => {
+    let win = UpdateWindow.getWindow();
+    if (win && options && options.size) win.setProgressBar(options.progress / options.size);
+});
+ipcMain.on('update-window-progress-reset', () => {
+    let win = UpdateWindow.getWindow();
+    if (win) win.setProgressBar(-1);
+});
+ipcMain.on('update-window-progress-load', () => {
+    let win = UpdateWindow.getWindow();
+    if (win) win.setProgressBar(2);
+});
 
-ipcMain.handle('path-user-data', () => app.getPath('userData'))
-ipcMain.handle('appData', e => app.getPath('appData'))
+ipcMain.handle('path-user-data', () => app.getPath('userData'));
+ipcMain.handle('appData', e => app.getPath('appData'));
 
 ipcMain.on('main-window-maximize', () => {
-    if (MainWindow.getWindow().isMaximized()) {
-        MainWindow.getWindow().unmaximize();
-    } else {
-        MainWindow.getWindow().maximize();
+    let win = MainWindow.getWindow();
+    if (win) {
+        if (win.isMaximized()) {
+            win.unmaximize();
+        } else {
+            win.maximize();
+        }
     }
-})
+});
 
-ipcMain.on('main-window-hide', () => MainWindow.getWindow().hide())
-ipcMain.on('main-window-show', () => MainWindow.getWindow().show())
+ipcMain.on('main-window-hide', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.hide();
+});
+ipcMain.on('main-window-show', () => {
+    let win = MainWindow.getWindow();
+    if (win) win.show();
+});
 
 ipcMain.handle('Microsoft-window', async (_, client_id) => {
     return await new Microsoft(client_id).getAuth();
@@ -78,6 +127,13 @@ app.on('window-all-closed', () => app.quit());
 autoUpdater.autoDownload = false;
 
 ipcMain.handle('update-app', async () => {
+    if (dev) {
+        setTimeout(() => {
+            const updateWindow = UpdateWindow.getWindow();
+            if (updateWindow) updateWindow.webContents.send('update-not-available');
+        }, 800);
+        return { dev: true };
+    }
     return await new Promise(async (resolve, reject) => {
         autoUpdater.checkForUpdates().then(res => {
             resolve(res);

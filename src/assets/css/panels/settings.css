@@ -1,12 +1,12 @@
 /* ============================================================
-   settings.css — Panel Paramètres Pro (Thriller/Horreur)
+   settings.css — Panel Paramètres Translucide (Fond Visible)
    DestinEvent Launcher
    ============================================================ */
 
 .settings .container {
     display: flex;
     height: 100%;
-    background: #080612;
+    background: transparent; /* Fond transparent pour voir le wallpaper */
 }
 
 /* ── Navigation latérale gauche ─────────────────────────────── */
@@ -15,7 +15,8 @@
     width: 210px;
     flex-shrink: 0;
     height: 100%;
-    background: #0D0B1F;
+    background: rgba(13, 11, 31, 0.65);
+    backdrop-filter: blur(12px);
     border-right: 1px solid rgba(180, 24, 42, 0.25);
     display: flex;
     align-items: center;
@@ -63,14 +64,14 @@
 .nav-settings-btn:hover {
     border-color: rgba(180, 24, 42, 0.6);
     color: #EDEAE0;
-    background: rgba(180, 24, 42, 0.15);
+    background: rgba(180, 24, 42, 0.18);
     box-shadow: 0 0 12px rgba(180, 24, 42, 0.25);
 }
 
 .active-settings-BTN {
     border-color: #B4182A !important;
     color: #EDEAE0 !important;
-    background: rgba(180, 24, 42, 0.25) !important;
+    background: rgba(180, 24, 42, 0.28) !important;
     box-shadow: -3px 0 0 #B4182A, 0 0 16px rgba(180, 24, 42, 0.35) !important;
 }
 
@@ -86,7 +87,7 @@
     background: rgba(224, 38, 58, 0.15);
 }
 
-/* ── Zone de Contenu Principale ─────────────────────────────── */
+/* ── Zone de Contenu Principale Translucide ──────────────────── */
 
 .container-settings {
     position: absolute;
@@ -101,6 +102,7 @@
     overflow-y: auto;
     padding: 16px 0 30px 0;
     box-sizing: border-box;
+    background: transparent;
 }
 
 .container-settings::-webkit-scrollbar {
@@ -133,14 +135,14 @@
 }
 
 .settings-elements-box {
-    background: rgba(31, 26, 58, 0.75);
-    backdrop-filter: blur(8px);
+    background: rgba(20, 16, 42, 0.55);
+    backdrop-filter: blur(10px);
     width: 82%;
     border-radius: 2px;
     padding: 1.4rem 1.8rem;
     margin: 0.4rem 0;
     border-left: 3px solid #B4182A;
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     border-right: 1px solid rgba(255, 255, 255, 0.04);
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -168,7 +170,7 @@
 .content-center { justify-content: center; }
 .content-evenly { justify-content: space-evenly; }
 
-/* ── Liste des comptes ──────────────────────────────────────── */
+/* ── Liste des comptes Translucide ──────────────────────────── */
 
 .accounts-list {
     max-height: 90%;
@@ -182,7 +184,8 @@
 }
 
 .account {
-    background: rgba(31, 26, 58, 0.85);
+    background: rgba(20, 16, 42, 0.65);
+    backdrop-filter: blur(8px);
     border: 1px solid rgba(180, 24, 42, 0.25);
     border-radius: 2px;
     display: flex;
@@ -260,7 +263,7 @@
     pointer-events: none;
 }
 
-/* ── RAM Slider ─────────────────────────────────────────────── */
+/* ── RAM Slider Translucide ──────────────────────────────────── */
 
 .memory-slider {
     position: relative;
@@ -341,7 +344,7 @@
     line-height: 1.5;
 }
 
-/* ── Java Path ──────────────────────────────────────────────── */
+/* ── Java Path Translucide ──────────────────────────────────── */
 
 .java-path-input-text {
     background: rgba(13, 11, 31, 0.6);

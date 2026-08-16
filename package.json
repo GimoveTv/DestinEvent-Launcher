@@ -2,7 +2,7 @@
     "name": "DestinEvent-Launcher",
     "preductname": "DestinEvent Launcher",
     "version": "0.0.1",
-    "description": "Launcher Minecraft pour le serveur DestinEvent",
+    "description": "Launcher Minecraft pour le serveur Destin Event",
     "main": "src/app.js",
     "author": {
         "name": "GimoveTv",

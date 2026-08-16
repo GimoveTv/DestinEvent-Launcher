@@ -42,7 +42,11 @@ async function changePanel(id) {
     let panel = document.querySelector(`.${id}`);
     let active = document.querySelector(`.active`)
     if (active) active.classList.toggle("active");
-    panel.classList.add("active");
+    if (panel) panel.classList.add("active");
+
+    if (id === 'profile' && window.profileInstance) {
+        window.profileInstance.loadProfile();
+    }
 }
 
 async function appdata() {
@@ -78,8 +82,14 @@ async function accountSelect(data) {
     let pseudoHome = document.querySelector('.profile-pseudo-home');
     if (pseudoHome && data?.name) pseudoHome.textContent = data.name;
 
-    let pseudoDisplay = document.querySelector('.profile-pseudo-display');
-    if (pseudoDisplay && data?.name) pseudoDisplay.textContent = data.name;
+    let pseudoDisplay = document.querySelectorAll('.profile-pseudo-display');
+    pseudoDisplay.forEach(el => { if (data?.name) el.textContent = data.name; });
+
+    let uuidDisplay = document.querySelectorAll('.profile-uuid-display');
+    uuidDisplay.forEach(el => { if (data?.uuid || data?.ID) el.textContent = data.uuid || data.ID; });
+
+    let typeDisplay = document.querySelectorAll('.profile-type-display');
+    typeDisplay.forEach(el => { if (data?.meta?.type) el.textContent = data.meta.type; });
 
     if (data?.profile?.skins[0]?.base64) headplayer(data.profile.skins[0].base64);
 }
@@ -91,33 +101,69 @@ async function headplayer(skinBase64) {
 }
 
 async function setStatus(opt) {
-    let nameServerElement = document.querySelector('.server-status-name')
-    let statusServerElement = document.querySelector('.server-status-text')
-    let playersOnline = document.querySelector('.status-player-count .player-count')
+    let nameServerElement = document.querySelector('.server-status-name');
+    let statusServerElement = document.querySelector('.server-status-text');
+    let statusDotWrapper = document.querySelector('.status-player-count');
+    let playersOnline = document.querySelector('.player-count') || document.querySelector('.status-player-count .player-count');
 
-    if (!opt) {
-        statusServerElement.classList.add('red')
-        statusServerElement.innerHTML = `Ferme - 0 ms`
-        document.querySelector('.status-player-count').classList.add('red')
-        playersOnline.innerHTML = '0'
-        return
+    let topBarText = document.querySelector('.status-top-text');
+    let topBarDot = document.querySelector('.status-pulse-dot');
+    let topBarIndicator = document.querySelector('.status-indicator-top');
+
+    if (!opt || !opt.ip) {
+        if (statusServerElement) {
+            statusServerElement.classList.add('red');
+            statusServerElement.innerHTML = `Fermé - 0 ms`;
+        }
+        if (statusDotWrapper) statusDotWrapper.classList.add('red');
+        if (playersOnline) playersOnline.innerHTML = '0';
+        if (topBarText) topBarText.textContent = 'HORS LIGNE';
+        if (topBarIndicator) topBarIndicator.style.borderColor = 'rgba(224, 38, 58, 0.3)';
+        if (topBarDot) { topBarDot.style.background = '#E0263A'; topBarDot.style.boxShadow = '0 0 8px #E0263A'; }
+        return;
     }
 
-    let { ip, port, nameServer } = opt
-    nameServerElement.innerHTML = nameServer
-    let status = new Status(ip, port);
-    let statusServer = await status.getStatus().then(res => res).catch(err => err);
+    let { ip, port, nameServer } = opt;
+    if (nameServerElement && nameServer) nameServerElement.innerHTML = nameServer;
 
-    if (!statusServer.error) {
-        statusServerElement.classList.remove('red')
-        document.querySelector('.status-player-count').classList.remove('red')
-        statusServerElement.innerHTML = `En ligne - ${statusServer.ms ? statusServer.ms : 0} ms`
-        playersOnline.innerHTML = statusServer.playersConnect ? statusServer.playersConnect : '0'
-    } else {
-        statusServerElement.classList.add('red')
-        statusServerElement.innerHTML = `Ferme - 0 ms`
-        document.querySelector('.status-player-count').classList.add('red')
-        playersOnline.innerHTML = '0'
+    try {
+        let status = new Status(ip, parseInt(port) || 25565);
+        let statusServer = await status.getStatus().then(res => res).catch(err => err);
+
+        if (statusServer && !statusServer.error) {
+            if (statusServerElement) {
+                statusServerElement.classList.remove('red');
+                statusServerElement.innerHTML = `En ligne - ${statusServer.ms ? statusServer.ms : 0} ms`;
+            }
+            if (statusDotWrapper) statusDotWrapper.classList.remove('red');
+            if (playersOnline) playersOnline.innerHTML = statusServer.playersConnect !== undefined ? statusServer.playersConnect : '0';
+
+            if (topBarText) topBarText.textContent = 'EN LIGNE';
+            if (topBarIndicator) topBarIndicator.style.borderColor = 'rgba(61, 191, 110, 0.3)';
+            if (topBarDot) { topBarDot.style.background = '#3DBF6E'; topBarDot.style.boxShadow = '0 0 8px #3DBF6E'; }
+        } else {
+            if (statusServerElement) {
+                statusServerElement.classList.add('red');
+                statusServerElement.innerHTML = `Fermé - 0 ms`;
+            }
+            if (statusDotWrapper) statusDotWrapper.classList.add('red');
+            if (playersOnline) playersOnline.innerHTML = '0';
+
+            if (topBarText) topBarText.textContent = 'HORS LIGNE';
+            if (topBarIndicator) topBarIndicator.style.borderColor = 'rgba(224, 38, 58, 0.3)';
+            if (topBarDot) { topBarDot.style.background = '#E0263A'; topBarDot.style.boxShadow = '0 0 8px #E0263A'; }
+        }
+    } catch (err) {
+        if (statusServerElement) {
+            statusServerElement.classList.add('red');
+            statusServerElement.innerHTML = `Fermé - 0 ms`;
+        }
+        if (statusDotWrapper) statusDotWrapper.classList.add('red');
+        if (playersOnline) playersOnline.innerHTML = '0';
+
+        if (topBarText) topBarText.textContent = 'HORS LIGNE';
+        if (topBarIndicator) topBarIndicator.style.borderColor = 'rgba(224, 38, 58, 0.3)';
+        if (topBarDot) { topBarDot.style.background = '#E0263A'; topBarDot.style.boxShadow = '0 0 8px #E0263A'; }
     }
 }
 

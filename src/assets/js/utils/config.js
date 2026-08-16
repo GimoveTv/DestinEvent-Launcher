@@ -37,7 +37,7 @@ class Config {
     }
 
     async getNews(config) {
-        if (config.rss) {
+        if (config && config.rss) {
             return new Promise((resolve, reject) => {
                 nodeFetch(config.rss).then(async config => {
                     if (config.status === 200) {

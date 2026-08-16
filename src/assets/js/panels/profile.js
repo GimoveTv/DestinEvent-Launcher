@@ -2,7 +2,7 @@
  * @author Luuxis
  * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
  */
-import { changePanel, database, config, skin2D, setStatus } from '../utils.js'
+import { changePanel, database, config, skin2D } from '../utils.js'
 
 class Profile {
     static id = "profile";
@@ -10,9 +10,10 @@ class Profile {
     async init(configData) {
         this.config = configData;
         this.db = new database();
+        window.profileInstance = this;
 
         this.initNav();
-        this.loadProfile();
+        await this.loadProfile();
     }
 
     initNav() {
@@ -29,24 +30,24 @@ class Profile {
 
     async loadProfile() {
         try {
+            if (!this.db) this.db = new database();
             let configClient = await this.db.readData('configClient');
             if (configClient?.account_selected) {
                 let auth = await this.db.readData('accounts', configClient.account_selected);
                 if (auth) {
-                    // Update pseudo
-                    let pseudoDisplay = document.querySelector('.profile-pseudo-display');
-                    if (pseudoDisplay) pseudoDisplay.textContent = auth.name || 'GimoveTTv';
+                    // Update pseudo dynamically across profile page
+                    let pseudoDisplays = document.querySelectorAll('.profile-pseudo-display');
+                    pseudoDisplays.forEach(el => el.textContent = auth.name || 'Joueur');
 
-                    // Update avatar head
+                    // Update avatar head texture dynamically
                     if (auth?.profile?.skins[0]?.base64) {
                         let skin = await new skin2D().creatHeadTexture(auth.profile.skins[0].base64);
-                        let headElem = document.querySelector('.profile-player-head');
-                        if (headElem) headElem.style.backgroundImage = `url(${skin})`;
+                        let headElems = document.querySelectorAll('.profile-player-head');
+                        headElems.forEach(el => el.style.backgroundImage = `url(${skin})`);
                     }
 
-                    // Check server access whitelist status
+                    // Check server access whitelist status dynamically
                     let instancesList = await config.getInstanceList().catch(() => []);
-                    let instanceSelect = configClient?.instance_select;
                     let isAuthorized = true;
 
                     for (let instance of instancesList) {
@@ -62,10 +63,10 @@ class Profile {
                     if (accessTextElem) {
                         if (isAuthorized) {
                             accessTextElem.textContent = 'Autorisé';
-                            accessTextElem.className = 'stat-value text-green access-status-text-profile';
+                            accessTextElem.className = 'stat-card-value text-green access-status-text-profile';
                         } else {
                             accessTextElem.textContent = 'En attente';
-                            accessTextElem.className = 'stat-value text-yellow access-status-text-profile';
+                            accessTextElem.className = 'stat-card-value text-yellow access-status-text-profile';
                         }
                     }
                 }

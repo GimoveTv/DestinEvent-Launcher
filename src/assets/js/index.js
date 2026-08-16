@@ -29,14 +29,8 @@ class Splash {
     }
 
     async startAnimation() {
-        let splashes = [
-            { "message": "Je... vie...", "author": "Luuxis" },
-            { "message": "Salut je suis du code.", "author": "Luuxis" },
-            { "message": "Linux n'est pas un os, mais un kernel.", "author": "Luuxis" }
-        ];
-        let splash = splashes[Math.floor(Math.random() * splashes.length)];
-        this.splashMessage.textContent = splash.message;
-        this.splashAuthor.children[0].textContent = "@" + splash.author;
+        this.splashMessage.textContent = "Bienvenue sur Destin Event";
+        this.splashAuthor.children[0].textContent = "By GEvent";
         await sleep(100);
         document.querySelector("#splash").style.display = "block";
         await sleep(500);
@@ -53,10 +47,6 @@ class Splash {
     async checkUpdate() {
         this.setStatus(`Recherche de mise à jour...`);
 
-        ipcRenderer.invoke('update-app').then().catch(err => {
-            return this.shutdown(`erreur lors de la recherche de mise à jour :<br>${err.message}`);
-        });
-
         ipcRenderer.on('updateAvailable', () => {
             this.setStatus(`Mise à jour disponible !`);
             if (os.platform() == 'win32') {
@@ -64,21 +54,31 @@ class Splash {
                 ipcRenderer.send('start-update');
             }
             else return this.dowloadUpdate();
-        })
+        });
 
         ipcRenderer.on('error', (event, err) => {
-            if (err) return this.shutdown(`${err.message}`);
-        })
+            console.log('Update check error, proceeding:', err);
+            this.maintenanceCheck();
+        });
 
         ipcRenderer.on('download-progress', (event, progress) => {
             ipcRenderer.send('update-window-progress', { progress: progress.transferred, size: progress.total })
             this.setProgress(progress.transferred, progress.total);
-        })
+        });
 
         ipcRenderer.on('update-not-available', () => {
-            console.error("Mise à jour non disponible");
+            console.log("Mise à jour non disponible / Dev mode");
             this.maintenanceCheck();
-        })
+        });
+
+        let res = await ipcRenderer.invoke('update-app').catch(err => {
+            console.log('Update app error:', err);
+            return null;
+        });
+
+        if (res && res.dev) {
+            setTimeout(() => this.maintenanceCheck(), 800);
+        }
     }
 
     getLatestReleaseForOS(os, preferredFormat, asset) {

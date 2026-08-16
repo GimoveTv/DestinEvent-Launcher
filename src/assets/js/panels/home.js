@@ -2,119 +2,205 @@
  * @author Luuxis
  * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
  */
-import { config, database, logger, changePanel, appdata, setStatus, pkg, popup } from '../utils.js'
-
+import { changePanel, database, config, setStatus, logger, pkg, accountSelect, addAccount, popup, appdata } from '../utils.js'
 const { Launch } = require('minecraft-java-core')
-const { shell, ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron')
 
 class Home {
     static id = "home";
-    async init(config) {
-        this.config = config;
+
+    async init(configData) {
+        this.config = configData;
         this.db = new database();
-        this.news()
-        this.instancesSelect()
-        document.querySelector('.settings-btn').addEventListener('click', e => changePanel('settings'))
+
+        this.initMedia();
+        this.news();
+        this.instancesSelect();
+        this.startRealtimeLoops();
+
+        let settingsBtn = document.querySelector('.settings-btn');
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', e => changePanel('settings'));
+        }
+
         let navProfile = document.querySelector('#nav-profile');
         if (navProfile) {
             navProfile.addEventListener('click', () => changePanel('profile'));
         }
     }
 
+    startRealtimeLoops() {
+        if (window.destinStatusInterval) clearInterval(window.destinStatusInterval);
+        if (window.destinMaintInterval) clearInterval(window.destinMaintInterval);
+
+        const checkStatus = async () => {
+            try {
+                let configClient = await this.db.readData('configClient').catch(() => null);
+                let instanceSelect = configClient ? configClient.instance_select : null;
+                let instancesList = await config.getInstanceList().catch(() => null);
+
+                if (Array.isArray(instancesList) && instancesList.length > 0) {
+                    // Chercher l'instance sélectionnée avec un status valide, sinon n'importe laquelle avec un status
+                    let activeInstance = instancesList.find(i => i.name == instanceSelect && i.status && i.status.ip)
+                        || instancesList.find(i => i.status && i.status.ip)
+                        || instancesList[0];
+                    if (activeInstance && activeInstance.status && activeInstance.status.ip) {
+                        await setStatus(activeInstance.status);
+                    }
+                }
+            } catch (e) {
+                console.error('Realtime status check error:', e);
+            }
+        };
+
+        // Rafraîchissement immédiat + Boucle en temps réel toutes les 3 secondes (3000ms)
+        checkStatus();
+        window.destinStatusInterval = setInterval(checkStatus, 3000);
+
+        // 2. Polling Temps Réel de Maintenance & Fermeture Automatique du Launcher/Jeu (toutes les 5s)
+        window.destinMaintInterval = setInterval(async () => {
+            try {
+                let cfg = await config.GetConfig().catch(() => null);
+                if (cfg && cfg.maintenance) {
+                    clearInterval(window.destinStatusInterval);
+                    clearInterval(window.destinMaintInterval);
+
+                    let playBtn = document.querySelector('.play-btn');
+                    if (playBtn) {
+                        playBtn.disabled = true;
+                        playBtn.textContent = 'EN MAINTENANCE';
+                        playBtn.style.background = '#4A4A5A';
+                        playBtn.style.cursor = 'not-allowed';
+                    }
+
+                    // Popup de Maintenance en temps réel avec message explicite
+                    let popupMaint = new popup();
+                    popupMaint.openPopup({
+                        title: 'MAINTENANCE EN COURS',
+                        content: `${cfg.maintenance_message || 'Le launcher est actuellement en maintenance.'}<br><br><span style="color:#EDEAE0;font-size:0.85rem;">Fermeture du launcher dans 5 secondes...</span>`,
+                        color: '#E0263A',
+                        options: true,
+                        exit: true
+                    });
+
+                    // Fermeture automatique du launcher dans 5 secondes
+                    setTimeout(() => {
+                        ipcRenderer.send('main-window-close');
+                    }, 5000);
+                }
+            } catch (e) {
+                console.error('Maintenance realtime check error:', e);
+            }
+        }, 5000);
+    }
+
+    initMedia() {
+        let globalBgVideo = document.querySelector('#global-bg-video');
+        let volumeSlider = document.querySelector('#bg-volume-slider');
+        let audioVolText = document.querySelector('.audio-vol-text');
+        let audioIcon = document.querySelector('.audio-icon');
+        let audioToggleBtn = document.querySelector('#audio-toggle-btn');
+
+        if (globalBgVideo) {
+            let savedVol = localStorage.getItem('bg_video_volume');
+            let initialVol = savedVol !== null ? parseInt(savedVol) : 20; // 20% par défaut
+
+            globalBgVideo.volume = initialVol / 100;
+            globalBgVideo.muted = initialVol === 0;
+
+            if (volumeSlider) volumeSlider.value = initialVol;
+            if (audioVolText) audioVolText.textContent = `${initialVol}%`;
+            if (audioIcon) {
+                audioIcon.innerHTML = initialVol === 0 ? '&#128263;' : initialVol < 50 ? '&#128265;' : '&#128266;';
+            }
+
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', (e) => {
+                    let val = parseInt(e.target.value);
+                    globalBgVideo.volume = val / 100;
+                    globalBgVideo.muted = val === 0;
+
+                    if (audioVolText) audioVolText.textContent = `${val}%`;
+                    if (audioIcon) {
+                        audioIcon.innerHTML = val === 0 ? '&#128263;' : val < 50 ? '&#128265;' : '&#128266;';
+                    }
+                    localStorage.setItem('bg_video_volume', val);
+                });
+            }
+
+            if (audioToggleBtn) {
+                audioToggleBtn.addEventListener('click', (e) => {
+                    if (e.target.id === 'bg-volume-slider') return;
+                    if (globalBgVideo.muted || globalBgVideo.volume === 0) {
+                        let restoreVol = parseInt(localStorage.getItem('bg_video_volume') || '20') || 20;
+                        if (restoreVol === 0) restoreVol = 20;
+                        globalBgVideo.muted = false;
+                        globalBgVideo.volume = restoreVol / 100;
+                        if (volumeSlider) volumeSlider.value = restoreVol;
+                        if (audioVolText) audioVolText.textContent = `${restoreVol}%`;
+                        if (audioIcon) audioIcon.innerHTML = restoreVol < 50 ? '&#128265;' : '&#128266;';
+                    } else {
+                        globalBgVideo.muted = true;
+                        if (volumeSlider) volumeSlider.value = 0;
+                        if (audioVolText) audioVolText.textContent = '0%';
+                        if (audioIcon) audioIcon.innerHTML = '&#128263;';
+                    }
+                });
+            }
+
+            globalBgVideo.addEventListener('error', () => {
+                let bgWrapper = document.querySelector('.global-bg-wrapper');
+                if (bgWrapper) bgWrapper.style.display = 'none';
+            });
+        }
+    }
+
     async news() {
-        let newsElement = document.querySelector('.news-list');
-        let news = await config.getNews(this.config).then(res => res).catch(err => false);
-        if (news) {
-            if (!news.length) {
-                let blockNews = document.createElement('div');
-                const date = this.getdate(new Date())
-                blockNews.classList.add('news-block');
-                blockNews.innerHTML = `
+        let newsZone = document.querySelector('.news-list');
+        if (!newsZone) return;
+        let news = await config.getNews(this.config).catch(err => err);
+        if (news && Array.isArray(news) && news.length > 0) {
+            // Trier les actualités par date décroissante (les plus récentes en premier)
+            news.sort((a, b) => new Date(b.publish_date || b.date || 0) - new Date(a.publish_date || a.date || 0));
+            newsZone.innerHTML = '';
+            for (let i = 0; i < news.length; i++) {
+                let date = this.getdate(news[i].publish_date || news[i].date || Date.now());
+
+                let newsBlock = document.createElement('div');
+                newsBlock.classList.add('news-block');
+
+                newsBlock.innerHTML = `
                     <div class="news-header">
-                        <img class="server-status-icon" src="assets/images/icon/icon.png">
                         <div class="header-text">
-                            <div class="title">Aucun message d'acte actuellement disponible.</div>
+                            <div class="title">${news[i].title || 'Actualité'}</div>
                         </div>
-                        <div class="date">
-                            <div class="day">${date.day}</div>
-                            <div class="month">${date.month}</div>
-                        </div>
+                        <div class="date">${date.day} ${date.month} ${date.year}</div>
                     </div>
                     <div class="news-content">
-                        <div class="bbWrapper">
-                            <p>Vous pourrez suivre ici tous les évènements et actes relatifs au serveur.</p>
-                        </div>
-                    </div>`
-                newsElement.appendChild(blockNews);
-            } else {
-                // Tri par date de publication (les plus récents en premier)
-                news.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
-
-                for (let News of news) {
-                    let date = this.getdate(News.publish_date)
-                    let blockNews = document.createElement('div');
-                    blockNews.classList.add('news-block');
-                    blockNews.innerHTML = `
-                        <div class="news-header">
-                            <img class="server-status-icon" src="assets/images/icon/icon.png">
-                            <div class="header-text">
-                                <div class="title">${News.title}</div>
-                            </div>
-                            <div class="date">
-                                <div class="day">${date.day}</div>
-                                <div class="month">${date.month}</div>
-                            </div>
-                        </div>
-                        <div class="news-content">
-                            <div class="bbWrapper">
-                                <p>${News.content.replace(/\n/g, '</br>')}</p>
-                                <p class="news-author">Auteur - <span>${News.author}</span></p>
-                            </div>
-                        </div>`
-                    newsElement.appendChild(blockNews);
-                }
+                        <div class="bbWrapper">${news[i].content || news[i].message || ''}</div>
+                    </div>
+                    <div class="news-author">Auteur - <span>${news[i].author || 'Admin'}</span></div>
+                `;
+                newsZone.appendChild(newsBlock);
             }
         } else {
-            let blockNews = document.createElement('div');
-            const date = this.getdate(new Date())
-            blockNews.classList.add('news-block');
-            blockNews.innerHTML = `
-                <div class="news-header">
-                    <img class="server-status-icon" src="assets/images/icon/icon.png">
-                    <div class="header-text">
-                        <div class="title">Erreur de connexion.</div>
-                    </div>
-                    <div class="date">
-                        <div class="day">${date.day}</div>
-                        <div class="month">${date.month}</div>
-                    </div>
-                </div>
-                <div class="news-content">
-                    <div class="bbWrapper">
-                        <p>Impossible de contacter le serveur d'actes.</br>Merci de vérifier votre connexion.</p>
-                    </div>
-                </div>`
-            newsElement.appendChild(blockNews);
+            newsZone.innerHTML = '<div class="news-block"><div class="news-header"><div class="header-text"><div class="title">Aucune actualité disponible</div></div></div></div>';
         }
     }
 
     async instancesSelect() {
         let configClient = await this.db.readData('configClient')
-        let auth = await this.db.readData('accounts', configClient.account_selected)
-        let instancesList = await config.getInstanceList()
-        let instanceSelect = instancesList.find(i => i.name == configClient?.instance_select) ? configClient?.instance_select : null
-
+        let instanceSelect = configClient ? configClient.instance_select : null
+        let instancesList = await config.getInstanceList().catch(err => err)
+        let auth = await this.db.readData('accounts', configClient ? configClient.account_selected : null)
         let instanceBTN = document.querySelector('.play-instance')
-        let instancePopup = document.querySelector('.instance-popup')
-        let instancesListPopup = document.querySelector('.instances-List')
-        let instanceCloseBTN = document.querySelector('.close-popup')
 
-        const updateInstanceUI = (name) => {
-            let instanceNameElems = document.querySelectorAll('.instance-name-display');
-            instanceNameElems.forEach(el => el.textContent = name || 'DestinEvent');
+        function updateInstanceUI(name) {
+            let instanceDisplays = document.querySelectorAll('.instance-name-display');
+            instanceDisplays.forEach(el => el.textContent = name || 'Destin Event');
         }
 
-        const updateAccessStatus = (isAuthorized) => {
+        function updateAccessStatus(isAuthorized) {
             let accessBadge = document.querySelector('.access-status-badge');
             let accessText = document.querySelector('.access-status-text');
             if (accessBadge && accessText) {
@@ -128,113 +214,72 @@ class Home {
             }
         }
 
-        if (instancesList.length === 1) {
-            document.querySelector('.instance-select').style.display = 'none'
-            instanceBTN.style.paddingRight = '0'
-        }
-
-        if (!instanceSelect) {
-            let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
-            let configClient = await this.db.readData('configClient')
-            if (newInstanceSelect) {
-                configClient.instance_select = newInstanceSelect.name
-                instanceSelect = newInstanceSelect.name
-                await this.db.updateData('configClient', configClient)
+        if (Array.isArray(instancesList) && instancesList.length > 0) {
+            if (!instanceSelect) {
+                let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
+                if (newInstanceSelect && configClient) {
+                    configClient.instance_select = newInstanceSelect.name;
+                    instanceSelect = newInstanceSelect.name;
+                    await this.db.updateData('configClient', configClient);
+                }
             }
-        }
 
-        updateInstanceUI(instanceSelect);
+            updateInstanceUI(instanceSelect || instancesList[0].name);
 
-        let userAuthorized = true;
-        for (let instance of instancesList) {
-            if (instance.whitelistActive) {
-                let whitelist = instance.whitelist.find(whitelist => whitelist == auth?.name)
-                if (whitelist !== auth?.name) {
-                    userAuthorized = false;
-                    if (instance.name == instanceSelect) {
-                        let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
-                        let configClient = await this.db.readData('configClient')
-                        configClient.instance_select = newInstanceSelect.name
-                        instanceSelect = newInstanceSelect.name
-                        updateInstanceUI(instanceSelect);
-                        setStatus(newInstanceSelect.status)
-                        await this.db.updateData('configClient', configClient)
+            let userAuthorized = true;
+            for (let instance of instancesList) {
+                if (instance.whitelistActive) {
+                    let whitelist = instance.whitelist ? instance.whitelist.find(w => w == auth?.name) : null;
+                    if (whitelist !== auth?.name) {
+                        userAuthorized = false;
                     }
                 }
-            } else console.log(`Initializing instance ${instance.name}...`)
-            if (instance.name == instanceSelect) setStatus(instance.status)
+                if (instance.name == instanceSelect) {
+                    await setStatus(instance.status);
+                }
+            }
+            updateAccessStatus(userAuthorized);
+        } else {
+            updateInstanceUI('DestinEvent');
+            await setStatus(null);
         }
 
-        updateAccessStatus(userAuthorized);
-
-        instancePopup.addEventListener('click', async e => {
-            let configClient = await this.db.readData('configClient')
-
-            if (e.target.classList.contains('instance-elements')) {
-                let newInstanceSelect = e.target.id
-                let activeInstanceSelect = document.querySelector('.active-instance')
-
-                if (activeInstanceSelect) activeInstanceSelect.classList.toggle('active-instance');
-                e.target.classList.add('active-instance');
-
-                configClient.instance_select = newInstanceSelect
-                await this.db.updateData('configClient', configClient)
-                instanceSelect = instancesList.filter(i => i.name == newInstanceSelect)
-                instancePopup.style.display = 'none'
-                updateInstanceUI(newInstanceSelect);
-                let instance = await config.getInstanceList()
-                let options = instance.find(i => i.name == configClient.instance_select)
-                if (options) await setStatus(options.status)
-            }
-        })
-
-        instanceBTN.addEventListener('click', async e => {
-            let configClient = await this.db.readData('configClient')
-            let instanceSelect = configClient.instance_select
-            let auth = await this.db.readData('accounts', configClient.account_selected)
-
-            if (e.target.classList.contains('instance-select')) {
-                instancesListPopup.innerHTML = ''
-                for (let instance of instancesList) {
-                    if (instance.whitelistActive) {
-                        instance.whitelist.map(whitelist => {
-                            if (whitelist == auth?.name) {
-                                if (instance.name == instanceSelect) {
-                                    instancesListPopup.innerHTML += `<div id="${instance.name}" class="instance-elements active-instance">${instance.name}</div>`
-                                } else {
-                                    instancesListPopup.innerHTML += `<div id="${instance.name}" class="instance-elements">${instance.name}</div>`
-                                }
-                            }
-                        })
-                    } else {
-                        if (instance.name == instanceSelect) {
-                            instancesListPopup.innerHTML += `<div id="${instance.name}" class="instance-elements active-instance">${instance.name}</div>`
-                        } else {
-                            instancesListPopup.innerHTML += `<div id="${instance.name}" class="instance-elements">${instance.name}</div>`
-                        }
-                    }
-                }
-
-                instancePopup.style.display = 'flex'
-            }
-
-            if (!e.target.classList.contains('instance-select')) this.startGame()
-        })
-
-        instanceCloseBTN.addEventListener('click', () => instancePopup.style.display = 'none')
+        if (instanceBTN) {
+            instanceBTN.onclick = () => this.startGame();
+        }
     }
 
     async startGame() {
-        let launch = new Launch()
-        let configClient = await this.db.readData('configClient')
-        let instance = await config.getInstanceList()
-        let authenticator = await this.db.readData('accounts', configClient.account_selected)
-        let options = instance.find(i => i.name == configClient.instance_select)
+        let launch = new Launch();
+        let configClient = await this.db.readData('configClient');
+        let instance = await config.getInstanceList().catch(err => null);
+        let authenticator = await this.db.readData('accounts', configClient ? configClient.account_selected : null);
 
-        let playInstanceBTN = document.querySelector('.play-instance')
-        let infoStartingBOX = document.querySelector('.info-starting-game')
-        let infoStarting = document.querySelector(".info-starting-game-text")
-        let progressBar = document.querySelector('.progress-bar')
+        let options = (Array.isArray(instance) && instance.length > 0)
+            ? (instance.find(i => i.name == configClient?.instance_select) || instance[0])
+            : null;
+
+        if (!options) {
+            let popupError = new popup();
+            popupError.openPopup({
+                title: 'Erreur',
+                content: 'Impossible de charger les données du jeu. Vérifiez votre connexion internet.',
+                color: 'red',
+                options: true
+            });
+            return;
+        }
+
+        let playInstanceBTN = document.querySelector('.play-instance');
+        let infoStartingBOX = document.querySelector('.info-starting-game');
+        let infoStarting = document.querySelector(".info-starting-game-text");
+        let progressBar = document.querySelector('.progress-bar');
+        let launchSpeed = document.querySelector('.launch-speed');
+        let launchPct = document.querySelector('.launch-percentage');
+        let launchEta = document.querySelector('.launch-eta');
+        let infoLaunchError = document.querySelector('.info-launch-error');
+        let errorMsgText = document.querySelector('.error-msg-text');
+        let retryLaunchBtn = document.querySelector('.retry-launch-btn');
 
         let opt = {
             url: options.url,
@@ -242,36 +287,36 @@ class Home {
             timeout: 10000,
             path: `${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`,
             instance: options.name,
-            version: options.loader.minecraft_version,
-            detached: configClient.launcher_config.closeLauncher == "close-all" ? false : true,
-            downloadFileMultiple: configClient.launcher_config.download_multi,
-            intelEnabledMac: configClient.launcher_config.intelEnabledMac,
+            version: options.loader ? options.loader.minecraft_version : '1.21.1',
+            detached: configClient?.launcher_config?.closeLauncher == "close-all" ? false : true,
+            downloadFileMultiple: configClient?.launcher_config?.download_multi !== undefined ? configClient.launcher_config.download_multi : true,
+            intelEnabledMac: configClient?.launcher_config?.intelEnabledMac || false,
 
             loader: {
-                type: options.loader.loader_type,
-                build: options.loader.loader_version,
-                enable: options.loader.loader_type == 'none' ? false : true
+                type: options.loader ? options.loader.loader_type : 'neoforge',
+                build: options.loader ? options.loader.loader_version : 'latest',
+                enable: options.loader ? (options.loader.loader_type == 'none' ? false : true) : true
             },
 
-            verify: options.verify,
+            verify: options.verify !== undefined ? options.verify : false,
 
-            ignored: [...options.ignored],
+            ignored: options.ignored ? [...options.ignored] : [],
 
             java: {
-                path: configClient.java_config.java_path,
+                path: configClient?.java_config?.java_path || null,
             },
 
-            JVM_ARGS:  options.jvm_args ? options.jvm_args : [],
+            JVM_ARGS: options.jvm_args ? options.jvm_args : [],
             GAME_ARGS: options.game_args ? options.game_args : [],
 
             screen: {
-                width: configClient.game_config.screen_size.width,
-                height: configClient.game_config.screen_size.height
+                width: configClient?.game_config?.screen_size?.width || 854,
+                height: configClient?.game_config?.screen_size?.height || 480
             },
 
             memory: {
-                min: `${configClient.java_config.java_memory.min * 1024}M`,
-                max: `${configClient.java_config.java_memory.max * 1024}M`
+                min: `${(configClient?.java_config?.java_memory?.min || 1) * 1024}M`,
+                max: `${(configClient?.java_config?.java_memory?.max || 4) * 1024}M`
             }
         }
 
@@ -279,43 +324,52 @@ class Home {
 
         playInstanceBTN.style.display = "none"
         infoStartingBOX.style.display = "block"
+        if (infoLaunchError) infoLaunchError.style.display = "none";
         progressBar.style.display = "";
+        if (launchSpeed) launchSpeed.textContent = "0.0 Mo/s";
+        if (launchPct) launchPct.textContent = "0%";
+        if (launchEta) launchEta.textContent = "--:--";
         ipcRenderer.send('main-window-progress-load')
 
         launch.on('extract', extract => {
             ipcRenderer.send('main-window-progress-load')
+            infoStarting.innerHTML = "Extraction & installation..."
             console.log(extract);
         });
 
         launch.on('progress', (progress, size) => {
-            infoStarting.innerHTML = `Téléchargement ${((progress / size) * 100).toFixed(0)}%`
+            let pct = Math.min(100, Math.max(0, ((progress / size) * 100))).toFixed(0);
+            infoStarting.innerHTML = "Téléchargement des mods..."
+            if (launchPct) launchPct.textContent = `${pct}%`;
             ipcRenderer.send('main-window-progress', { progress, size })
             progressBar.value = progress;
             progressBar.max = size;
         });
 
         launch.on('check', (progress, size) => {
-            infoStarting.innerHTML = `Vérification ${((progress / size) * 100).toFixed(0)}%`
+            let pct = Math.min(100, Math.max(0, ((progress / size) * 100))).toFixed(0);
+            infoStarting.innerHTML = "Vérification des fichiers..."
+            if (launchPct) launchPct.textContent = `${pct}%`;
             ipcRenderer.send('main-window-progress', { progress, size })
             progressBar.value = progress;
             progressBar.max = size;
         });
 
         launch.on('estimated', (time) => {
-            let hours = Math.floor(time / 3600);
-            let minutes = Math.floor((time - hours * 3600) / 60);
-            let seconds = Math.floor(time - hours * 3600 - minutes * 60);
-            console.log(`${hours}h ${minutes}m ${seconds}s`);
-        })
+            let minutes = Math.floor(time / 60);
+            let seconds = Math.floor(time % 60);
+            if (launchEta) launchEta.textContent = `${minutes}m ${seconds}s`;
+        });
 
         launch.on('speed', (speed) => {
-            console.log(`${(speed / 1067008).toFixed(2)} Mb/s`)
-        })
+            let mbs = (speed / (1024 * 1024)).toFixed(1);
+            if (launchSpeed) launchSpeed.textContent = `${mbs} Mo/s`;
+        });
 
         launch.on('patch', patch => {
             console.log(patch);
             ipcRenderer.send('main-window-progress-load')
-            infoStarting.innerHTML = `Patch en cours...`
+            infoStarting.innerHTML = "Patch des fichiers en cours..."
         });
 
         launch.on('data', (e) => {
@@ -325,9 +379,9 @@ class Home {
             };
             new logger('Minecraft', '#36b030');
             ipcRenderer.send('main-window-progress-load')
-            infoStarting.innerHTML = `Démarrage en cours...`
+            infoStarting.innerHTML = "Lancement de Minecraft..."
             console.log(e);
-        })
+        });
 
         launch.on('close', code => {
             if (configClient.launcher_config.closeLauncher == 'close-launcher') {
@@ -336,29 +390,41 @@ class Home {
             ipcRenderer.send('main-window-progress-reset')
             infoStartingBOX.style.display = "none"
             playInstanceBTN.style.display = "flex"
-            infoStarting.innerHTML = `Vérification`
+            infoStarting.innerHTML = "Vérification des fichiers..."
             new logger(pkg.name, '#7289da');
             console.log('Close');
         });
 
         launch.on('error', err => {
-            let popupError = new popup()
+            ipcRenderer.send('main-window-progress-reset')
+            new logger(pkg.name, '#7289da');
 
-            popupError.openPopup({
-                title: 'Erreur',
-                content: err.error,
-                color: 'red',
-                options: true
-            })
+            if (infoLaunchError && errorMsgText) {
+                infoLaunchError.style.display = "flex";
+                errorMsgText.textContent = err.error || "Une erreur s'est produite lors du téléchargement.";
+
+                if (retryLaunchBtn) {
+                    retryLaunchBtn.onclick = () => {
+                        infoStartingBOX.style.display = "none";
+                        playInstanceBTN.style.display = "flex";
+                        this.startGame();
+                    };
+                }
+            } else {
+                let popupError = new popup();
+                popupError.openPopup({
+                    title: 'Erreur',
+                    content: err.error,
+                    color: 'red',
+                    options: true
+                });
+                infoStartingBOX.style.display = "none";
+                playInstanceBTN.style.display = "flex";
+            }
 
             if (configClient.launcher_config.closeLauncher == 'close-launcher') {
                 ipcRenderer.send("main-window-show")
             };
-            ipcRenderer.send('main-window-progress-reset')
-            infoStartingBOX.style.display = "none"
-            playInstanceBTN.style.display = "flex"
-            infoStarting.innerHTML = `Vérification`
-            new logger(pkg.name, '#7289da');
             console.log(err);
         });
     }
