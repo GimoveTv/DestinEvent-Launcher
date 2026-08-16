@@ -52,16 +52,13 @@ class Settings {
             try {
                 let id = e.target.id
                 if (e.target.classList.contains('account')) {
+                    if (id == 'add') return;
+
                     popupAccount.openPopup({
                         title: 'Connexion',
                         content: 'Veuillez patienter...',
                         color: 'var(--color)'
                     })
-
-                    if (id == 'add') {
-                        document.querySelector('.cancel-home').style.display = 'inline'
-                        return changePanel('login')
-                    }
 
                     let account = await this.db.readData('accounts', id);
                     let configClient = await this.setInstance(account);

@@ -1,40 +1,38 @@
 <div class="container">
     <div class="nav-settings">
-        <p>Paramètres</p>
+        <p>PARAMÈTRES</p>
         <div class="nav-box">
             <div id="account" class="nav-settings-btn active-settings-BTN">COMPTES</div>
-            <div id="java" class="nav-settings-btn">JAVA</div>
-            <div id="resolution" class="nav-settings-btn">RESOLUTION</div>
+            <div id="java" class="nav-settings-btn">JAVA & RAM</div>
+            <div id="resolution" class="nav-settings-btn">RÉSOLUTION</div>
             <div id="launcher" class="nav-settings-btn">LAUNCHER</div>
-            <div id="save" class="nav-settings-btn">ACCUEIL</div>
+            <div id="save" class="nav-settings-btn">RETOUR ACCUEIL</div>
         </div>
     </div>
 
+    <!-- ONGLET COMPTES -->
     <div id="account-tab" class="container-settings active-container-settings">
-        <div class="titre-tab">Comptes joueurs</div>
+        <div class="titre-tab">VOTRE COMPTE MINECRAFT</div>
 
-        <div class="accounts-list content-scroll">
-            <div class="account" id="add">
-                <div class="add-profile">
-                    <div class="icon-account-add"></div>
-                </div>
-                <div class="add-text-profile">Ajouter un compte</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="java-tab" class="container-settings content-scroll">
-        <div class="titre-tab">Paramètre de votre RAM</div>
         <div class="settings-elements-box">
             <div class="setting-text">
-                Définition de la RAM alloué à votre jeu, une quantité plus important augmenteras les performances de
-                votre jeu.<br>
-                A noter qu'il faut éviter de mettre une trop grande quantité sinon cela peut provoquer des pertes de
-                performances sur vos autres applications.<br><br>
-                <b>-RAM Maximale:</b> Indique la quantité totale de RAM allouée à votre jeu. Il est recommandé de ne pas
-                dépasser 50% de la quantité totale de RAM présente sur votre PC.<br><br>
-                <b>-RAM Minimale:</b> Indique la quantité minimale de RAM allouée au démarrage de votre jeu. Il est
-                recommandé de ne pas mettre plus de 4Go pour cette valeur.
+                Gestion du compte actif connecté à DestinEvent.
+            </div>
+        </div>
+
+        <div class="accounts-list content-scroll">
+            <!-- Les comptes sont injectés dynamiquement ici sans le bouton d'ajout d'autre compte -->
+        </div>
+    </div>
+
+    <!-- ONGLET JAVA & RAM -->
+    <div id="java-tab" class="container-settings content-scroll">
+        <div class="titre-tab">MÉMOIRE RAM ALLOUÉE</div>
+        <div class="settings-elements-box">
+            <div class="setting-text">
+                Ajustez la mémoire RAM allouée au jeu pour optimiser les performances de votre partie.<br>
+                <b>RAM Maximale:</b> Quantité maximale de RAM utilisable par Minecraft (recommandé : 4Go à 8Go).<br>
+                <b>RAM Minimale:</b> Quantité allouée dès le démarrage du jeu.
             </div>
             <div class="settings-elements content-evenly">
                 <div class="memory-slider" min="0.5" max="8" step="0.5">
@@ -49,107 +47,86 @@
                     </div>
                 </div>
                 <div class="ram-info-block">
-                    <b>Vous possédez un total de <span id="total-ram">0 Go</span> RAM.</b><br>
-                    <b>Vous possédez un total de <span id="free-ram">0 Go</span> RAM disponible.</b>
+                    <b>RAM Totale du PC : <span id="total-ram">0 Go</span></b><br>
+                    <b>RAM Disponible : <span id="free-ram">0 Go</span></b>
                 </div>
             </div>
         </div>
 
-        <div class="titre-tab">Emplacement de Java</div>
+        <div class="titre-tab">EXÉCUTABLE JAVA</div>
         <div class="settings-elements-box">
             <div class="setting-text">
-                Le launcher utilise une version embarquée de Java.<br>
-                Cette version est disponible dans le répertoire :<br><span class="java-path-txt"></span><br>
-                Toutefois, vous pouvez spécifier votre propre exécutable si votre jeu requiert une version de java plus
-                recente.
+                Le launcher utilise la version embarquée optimale de Java.<br>
+                Dossier runtime : <span class="java-path-txt"></span><br>
+                Vous pouvez spécifier votre propre exécutable (`java.exe` / `javaw.exe`) si nécessaire.
             </div>
             <div class="settings-elements content-evenly">
-                <input type="text" class="java-path-input-text" disabled>
+                <input type="text" class="java-path-input-text" disabled placeholder="Version par défaut du launcher">
                 <input type="file" class="java-path-input-file" accept="application/octet-stream" />
                 <div class="java-path-box">
-                    <div class="java-path-set java-path-btn">Changer</div>
-                    <div class="java-path-reset java-path-btn">Par defaut</div>
+                    <div class="java-path-set java-path-btn">MODIFIER</div>
+                    <div class="java-path-reset java-path-btn">PAR DÉFAUT</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ONGLET RÉSOLUTION -->
     <div id="resolution-tab" class="container-settings">
-        <div class="titre-tab">Paramètres de resolution Minecraft</div>
+        <div class="titre-tab">RÉSOLUTION DU JEU</div>
         <div class="settings-elements-box">
             <div class="setting-text">
-                Définissez une résolution personnalisée afin d'avoir un jeu adapté à votre écran.<br>
-                Par défaut le jeu démarre en 854 X 480,<br>vous pouvez modifier cette valeur pour un confort de jeu
-                optimal. La résolution idéale est de 1280 X 720.
+                Définissez la résolution de fenêtre au lancement de Minecraft (Largeur × Hauteur).<br>
+                La résolution standard recommandée est <b>1280 × 720</b> ou <b>1920 × 1080</b>.
             </div>
             <div class="settings-elements content-center">
                 <div class="input-size-element">
-                    <input type="number" class="width-size input-resolution">
+                    <input type="number" class="width-size input-resolution" placeholder="1280">
                     <div class="size-cross"></div>
-                    <input type="number" class="height-size input-resolution">
+                    <input type="number" class="height-size input-resolution" placeholder="720">
                 </div>
-                <div class="size-reset size-btn">Par defaut</div>
+                <div class="size-reset size-btn">PAR DÉFAUT</div>
             </div>
         </div>
     </div>
 
+    <!-- ONGLET LAUNCHER -->
     <div id="launcher-tab" class="container-settings content-scroll">
-        <div class="titre-tab">Paramètre de téléchargement</div>
+        <div class="titre-tab">TÉLÉCHARGEMENTS SIMULTANÉS</div>
         <div class="settings-elements-box">
             <div class="setting-text">
-                Ce paramètre détermine le nombre maximum de fichiers pouvant être téléchargés simultanément lors de la
-                mise à jour ou du téléchargement de ressources.<br><br>
-
-                Veuillez noter que la modification de ce paramètre peut affecter les performances de
-                téléchargement.<br>
-                Il est recommandé de ne pas dépasser les limites recommandées par défaut,<br>
-                sauf si vous rencontrez des problèmes spécifiques de connectivité.
+                Nombre maximum de fichiers téléchargés en parallèle lors des mises à jour (Valeur par défaut : 5).
             </div>
             <div class="settings-elements content-center">
                 <input type="number" class="max-files input-max-files">
-                <p>Fichiers</p>
-                <div class="max-files-reset max-files-btn">Par defaut</div>
+                <p class="setting-text-inline">fichiers simultanés</p>
+                <div class="max-files-reset max-files-btn">PAR DÉFAUT</div>
             </div>
         </div>
 
-        <div class="titre-tab">Thème clair et sombre</div>
+        <div class="titre-tab">APPARENCE ET THÈME</div>
         <div class="settings-elements-box">
             <div class="setting-text">
-                Choisissez entre le thème clair et le thème sombre pour personnaliser l'apparence du launcher.<br><br>
-
-                La modification du thème peut influencer la lisibilité et l'expérience visuelle.<br>
-                Sélectionnez celui qui vous convient le mieux en fonction de vos préférences.
+                Sélectionnez le mode d'affichage visuel du launcher.
             </div>
             <div class="settings-elements content-center theme-box">
-                <div class="theme-btn theme-btn-clair">Clair</div>
-                <div class="theme-btn theme-btn-sombre">Sombre</div>
-                <div class="theme-btn theme-btn-auto">Automatique</div>
+                <div class="theme-btn theme-btn-clair">CLAIR</div>
+                <div class="theme-btn theme-btn-sombre">SOMBRE</div>
+                <div class="theme-btn theme-btn-auto">AUTOMATIQUE</div>
             </div>
         </div>
 
-        <div class="titre-tab">Comportement du launcher au démarrage</div>
+        <div class="titre-tab">COMPORTEMENT AU DÉMARRAGE</div>
         <div class="settings-elements-box">
             <div class="setting-text">
-                Vous pouvez choisir si le launcher se ferme automatiquement ou reste ouvert lorsque vous lancez le jeu.
+                Choisissez le comportement du launcher lors du lancement de Minecraft.
             </div>
 
             <div class="settings-elements content-evenly close-box">
-                <div class="close-launcher close-btn">Fermer le launcher après le démarrage du jeu</div>
+                <div class="close-launcher close-btn">Fermer le launcher au lancement</div>
                 <div class="close-none close-btn">Garder le launcher ouvert</div>
-                <div class="close-all close-btn">Fermer le jeu si le launcher est fermé</div>
+                <div class="close-all close-btn">Fermer le jeu si le launcher ferme</div>
             </div>
         </div>
-
-        <!-- <div class="titre-tab">Environnement INTEL</div>
-        <div class="settings-elements-box">
-            <div class="setting-text">
-                pour les jouer avec les proseceurs apple silicon 
-            </div>
-
-            <div class="settings-elements content-evenly close-box">
-                <div class="close-launcher close-btn">Environnement INTEL</div>
-                <div class="close-none close-btn">Environnement SILICON</div>
-            </div>
-        </div> -->
     </div>
 </div>

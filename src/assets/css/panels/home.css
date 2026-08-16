@@ -1,5 +1,5 @@
 /* ============================================================
-   home.css — Design Pro & Original Thriller/Horreur
+   home.css — Écran d'accueil (Thriller/Horreur Pro)
    DestinEvent Launcher
    ============================================================ */
 
@@ -18,7 +18,7 @@
         radial-gradient(ellipse at 80% 90%, rgba(180, 24, 42, 0.12) 0%, transparent 60%),
         radial-gradient(ellipse at 20% 10%, rgba(26, 22, 51, 0.8) 0%, transparent 50%);
     position: relative;
-    padding-top: 26px; /* Espace dragbar */
+    padding-top: 26px;
     box-sizing: border-box;
 }
 
@@ -271,7 +271,7 @@
     box-shadow: 0 0 8px #E0263A;
 }
 
-/* ── Bannière Héro Originale ───────────────────────────────── */
+/* ── Bannière Héro ─────────────────────────────────────────── */
 
 .hero-banner {
     width: 100%;
@@ -295,7 +295,6 @@
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
 }
 
-/* Encadrements d'angles style thriller */
 .hero-corner {
     position: absolute;
     width: 12px;
@@ -455,9 +454,9 @@
 }
 
 .card-value {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 800;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     color: #EDEAE0;
     white-space: nowrap;
     overflow: hidden;
@@ -530,7 +529,7 @@
     color: #9A9588;
 }
 
-/* ── Zone Basse (News + Profile/Play) ───────────────────────── */
+/* ── Zone Basse (Actes + Espace Joueur) ──────────────────────── */
 
 .bottom-zone {
     display: flex;
@@ -539,7 +538,7 @@
     min-height: 180px;
 }
 
-/* Flux d'informations */
+/* Flux d'informations (Acte) */
 .news-zone {
     flex: 1;
     display: flex;
@@ -560,12 +559,12 @@
 }
 
 .news-zone-title {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.2em;
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
     color: #E0263A;
-    text-shadow: 0 0 8px rgba(224, 38, 58, 0.3);
+    text-shadow: 0 0 10px rgba(224, 38, 58, 0.4);
 }
 
 .news-zone-sub {
@@ -645,13 +644,14 @@
     font-weight: 800;
 }
 
-/* Panneau Profil & Bouton JOUER AAA */
+/* ── ESPACE JOUEUR & BOUTON JOUER AAA ───────────────────────── */
+
 .profile-play-panel {
     width: 290px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    background: rgba(31, 26, 58, 0.8);
+    gap: 16px;
+    background: rgba(31, 26, 58, 0.85);
     backdrop-filter: blur(10px);
     padding: 18px;
     border-radius: 2px;
@@ -663,12 +663,28 @@
     flex-shrink: 0;
 }
 
+.espace-joueur-header {
+    border-bottom: 1px solid rgba(180, 24, 42, 0.3);
+    padding-bottom: 6px;
+}
+
+.espace-joueur-title {
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.22em;
+    color: #E0263A;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(224, 38, 58, 0.3);
+}
+
 .profile-block {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(180, 24, 42, 0.25);
+    background: rgba(13, 11, 31, 0.5);
+    padding: 10px 12px;
+    border-radius: 2px;
+    border: 1px solid rgba(180, 24, 42, 0.2);
 }
 
 .player-head-wrapper {
@@ -676,13 +692,13 @@
 }
 
 .player-head {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 2px;
     background: url('../../images/default/setve.png') no-repeat center / cover;
     image-rendering: pixelated;
     border: 1px solid #B4182A;
-    box-shadow: 0 0 14px rgba(180, 24, 42, 0.4);
+    box-shadow: 0 0 12px rgba(180, 24, 42, 0.4);
 }
 
 .profile-infos-home {
@@ -692,57 +708,81 @@
     overflow: hidden;
 }
 
+.profile-pseudo-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    color: #5C5850;
+    text-transform: uppercase;
+}
+
 .profile-pseudo-home {
-    font-size: 1rem;
+    font-size: 0.98rem;
     font-weight: 800;
     color: #EDEAE0;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.profile-type-home {
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #E0263A;
-}
-
-.social-tab {
-    margin: 12px 0;
-}
-
-.social-list {
+/* Boîte d'Accès au Serveur */
+.server-access-box {
     display: flex;
-    gap: 10px;
-}
-
-.social-block {
-    width: 38px;
-    height: 38px;
-    background: rgba(13, 11, 31, 0.6);
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(13, 11, 31, 0.5);
+    padding: 10px 12px;
     border-radius: 2px;
-    display: flex;
+    border: 1px solid rgba(180, 24, 42, 0.2);
+}
+
+.access-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #5C5850;
+    text-transform: uppercase;
+}
+
+.access-status-badge {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(180, 24, 42, 0.25);
-    cursor: pointer;
-    transition: all 0.2s ease;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: 2px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
-.social-block:hover {
-    background: rgba(180, 24, 42, 0.25);
-    border-color: #B4182A;
-    box-shadow: 0 0 10px rgba(180, 24, 42, 0.3);
+.access-authorized {
+    background: rgba(61, 191, 110, 0.12);
+    color: #3DBF6E;
+    border: 1px solid rgba(61, 191, 110, 0.35);
 }
 
-.social-block .icon-social {
-    width: 20px;
-    height: 20px;
-    filter: var(--svg-color);
-    opacity: 0.8;
+.access-authorized .access-dot {
+    width: 7px;
+    height: 7px;
+    background: #3DBF6E;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #3DBF6E;
+}
+
+.access-pending {
+    background: rgba(255, 159, 67, 0.12);
+    color: #FF9F43;
+    border: 1px solid rgba(255, 159, 67, 0.35);
+}
+
+.access-pending .access-dot {
+    width: 7px;
+    height: 7px;
+    background: #FF9F43;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #FF9F43;
 }
 
 /* Zone Bouton Jouer AAA */
@@ -860,7 +900,7 @@
 }
 
 /* =============================================================
-   POPUP INSTANCE (FONCTIONNEL & STYLISÉ)
+   POPUP INSTANCE (FONCTIONNEL)
    ============================================================= */
 
 .instance-popup {

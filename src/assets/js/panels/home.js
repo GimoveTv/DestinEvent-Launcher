@@ -13,7 +13,6 @@ class Home {
         this.config = config;
         this.db = new database();
         this.news()
-        this.socialLick()
         this.instancesSelect()
         document.querySelector('.settings-btn').addEventListener('click', e => changePanel('settings'))
     }
@@ -30,7 +29,7 @@ class Home {
                     <div class="news-header">
                         <img class="server-status-icon" src="assets/images/icon/icon.png">
                         <div class="header-text">
-                            <div class="title">Aucun news n'ai actuellement disponible.</div>
+                            <div class="title">Aucun message d'acte actuellement disponible.</div>
                         </div>
                         <div class="date">
                             <div class="day">${date.day}</div>
@@ -39,11 +38,14 @@ class Home {
                     </div>
                     <div class="news-content">
                         <div class="bbWrapper">
-                            <p>Vous pourrez suivre ici toutes les news relative au serveur.</p>
+                            <p>Vous pourrez suivre ici tous les évènements et actes relatifs au serveur.</p>
                         </div>
                     </div>`
                 newsElement.appendChild(blockNews);
             } else {
+                // Tri par date de publication (les plus récents en premier)
+                news.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
+
                 for (let News of news) {
                     let date = this.getdate(News.publish_date)
                     let blockNews = document.createElement('div');
@@ -74,32 +76,22 @@ class Home {
             blockNews.classList.add('news-block');
             blockNews.innerHTML = `
                 <div class="news-header">
-                        <img class="server-status-icon" src="assets/images/icon/icon.png">
-                        <div class="header-text">
-                            <div class="title">Error.</div>
-                        </div>
-                        <div class="date">
-                            <div class="day">${date.day}</div>
-                            <div class="month">${date.month}</div>
-                        </div>
+                    <img class="server-status-icon" src="assets/images/icon/icon.png">
+                    <div class="header-text">
+                        <div class="title">Erreur de connexion.</div>
                     </div>
-                    <div class="news-content">
-                        <div class="bbWrapper">
-                            <p>Impossible de contacter le serveur des news.</br>Merci de vérifier votre configuration.</p>
-                        </div>
-                    </div>`
+                    <div class="date">
+                        <div class="day">${date.day}</div>
+                        <div class="month">${date.month}</div>
+                    </div>
+                </div>
+                <div class="news-content">
+                    <div class="bbWrapper">
+                        <p>Impossible de contacter le serveur d'actes.</br>Merci de vérifier votre connexion.</p>
+                    </div>
+                </div>`
             newsElement.appendChild(blockNews);
         }
-    }
-
-    socialLick() {
-        let socials = document.querySelectorAll('.social-block')
-
-        socials.forEach(social => {
-            social.addEventListener('click', e => {
-                shell.openExternal(e.target.dataset.url)
-            })
-        });
     }
 
     async instancesSelect() {
@@ -113,14 +105,28 @@ class Home {
         let instancesListPopup = document.querySelector('.instances-List')
         let instanceCloseBTN = document.querySelector('.close-popup')
 
-        if (instancesList.length === 1) {
-            document.querySelector('.instance-select').style.display = 'none'
-            instanceBTN.style.paddingRight = '0'
-        }
-
         const updateInstanceUI = (name) => {
             let instanceNameElems = document.querySelectorAll('.instance-name-display');
             instanceNameElems.forEach(el => el.textContent = name || 'DestinEvent');
+        }
+
+        const updateAccessStatus = (isAuthorized) => {
+            let accessBadge = document.querySelector('.access-status-badge');
+            let accessText = document.querySelector('.access-status-text');
+            if (accessBadge && accessText) {
+                if (isAuthorized) {
+                    accessBadge.className = 'access-status-badge access-authorized';
+                    accessText.textContent = 'Autorisé';
+                } else {
+                    accessBadge.className = 'access-status-badge access-pending';
+                    accessText.textContent = 'En attente';
+                }
+            }
+        }
+
+        if (instancesList.length === 1) {
+            document.querySelector('.instance-select').style.display = 'none'
+            instanceBTN.style.paddingRight = '0'
         }
 
         if (!instanceSelect) {
@@ -135,10 +141,12 @@ class Home {
 
         updateInstanceUI(instanceSelect);
 
+        let userAuthorized = true;
         for (let instance of instancesList) {
             if (instance.whitelistActive) {
                 let whitelist = instance.whitelist.find(whitelist => whitelist == auth?.name)
                 if (whitelist !== auth?.name) {
+                    userAuthorized = false;
                     if (instance.name == instanceSelect) {
                         let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
                         let configClient = await this.db.readData('configClient')
@@ -152,6 +160,8 @@ class Home {
             } else console.log(`Initializing instance ${instance.name}...`)
             if (instance.name == instanceSelect) setStatus(instance.status)
         }
+
+        updateAccessStatus(userAuthorized);
 
         instancePopup.addEventListener('click', async e => {
             let configClient = await this.db.readData('configClient')
@@ -311,7 +321,7 @@ class Home {
             };
             new logger('Minecraft', '#36b030');
             ipcRenderer.send('main-window-progress-load')
-            infoStarting.innerHTML = `Demarrage en cours...`
+            infoStarting.innerHTML = `Démarrage en cours...`
             console.log(e);
         })
 
