@@ -1,11 +1,12 @@
 <div class="container">
 
     <!-- ══════════════════════════════════════════════════════
-         SIDEBAR GAUCHE — Navigation verticale
+         SIDEBAR DE NAVIGATION VERTICALE (GAUCHE)
     ═══════════════════════════════════════════════════════ -->
     <nav class="sidebar-nav">
         <div class="sidebar-logo">
             <img class="sidebar-icon-img" src="assets/images/icon/icon.png" alt="DE">
+            <div class="sidebar-logo-glow"></div>
         </div>
 
         <ul class="sidebar-links">
@@ -13,7 +14,7 @@
                 <span class="sidebar-nav-icon icon-monitor"></span>
             </li>
             <li class="sidebar-item" id="nav-news" title="Actualités">
-                <span class="sidebar-nav-icon nav-news-icon">&#9719;</span>
+                <span class="sidebar-nav-icon">&#9719;</span>
             </li>
         </ul>
 
@@ -29,106 +30,138 @@
     ═══════════════════════════════════════════════════════ -->
     <div class="main-content">
 
-        <!-- ── BANDEAU SUPÉRIEUR ────────────────────────── -->
+        <!-- ── TOP BAR (BANDEAU SUPÉRIEUR) ──────────────── -->
         <header class="top-bar">
             <div class="top-bar-left">
-                <span class="top-bar-title">DestinEvent</span>
-                <span class="top-bar-subtitle">Launcher</span>
+                <div class="brand-badge">DE</div>
+                <div class="brand-titles">
+                    <span class="top-bar-title">DESTINEVENT</span>
+                    <span class="top-bar-subtitle">SERVER LAUNCHER</span>
+                </div>
             </div>
             <div class="top-bar-right">
+                <div class="status-indicator-top">
+                    <span class="status-pulse-dot"></span>
+                    <span class="status-top-text">EN LIGNE</span>
+                </div>
                 <div class="top-bar-notif" title="Notifications">
                     <span class="notif-dot"></span>
                 </div>
             </div>
         </header>
 
-        <!-- ── BANNIÈRE HÉRO ────────────────────────────── -->
+        <!-- ── BANNIÈRE HÉRO (DESIGN ORIGINAL THRILLER) ── -->
         <div class="hero-banner">
-            <div class="hero-overlay"></div>
+            <div class="hero-corner hero-corner-tl"></div>
+            <div class="hero-corner hero-corner-br"></div>
+            <div class="hero-scanlines"></div>
             <div class="hero-content">
-                <img class="hero-logo" src="assets/images/icon/icon.png" alt="DestinEvent">
-                <div class="hero-text">
-                    <div class="hero-name">DestinEvent</div>
-                    <div class="hero-tagline">Un destin écrit d'avance</div>
+                <div class="hero-logo-frame">
+                    <img class="hero-logo" src="assets/images/icon/icon.png" alt="DestinEvent">
+                </div>
+                <div class="hero-text-block">
+                    <div class="hero-tag">SERVEUR OFFICIEL THRILLER</div>
+                    <div class="hero-name">DESTINEVENT</div>
+                    <div class="hero-tagline">CHAQUE CHOIX COMPTE. VOTRE DESTIN EST ÉCRIT.</div>
                 </div>
             </div>
         </div>
 
-        <!-- ── CARDS D'INFORMATION ──────────────────────── -->
+        <!-- ── 3 CARDS D'INFORMATION CÔTE À CÔTE ───────── -->
         <div class="info-cards">
 
-            <!-- Card 1 : Statut serveur -->
+            <!-- Card 1 : Statut Serveur -->
             <div class="info-card card-server">
-                <div class="card-label">Serveur</div>
-                <div class="card-value server-status-name">—</div>
+                <div class="card-header-row">
+                    <span class="card-label">STATUT SERVEUR</span>
+                    <span class="card-badge-live">LIVE</span>
+                </div>
+                <div class="card-value server-status-name">Minecraft</div>
                 <div class="card-status-row">
                     <div class="status-dot-wrapper status-player-count">
                         <span class="status-dot"></span>
-                        <span class="server-status-text">Chargement...</span>
+                        <span class="server-status-text">Vérification...</span>
                     </div>
                     <div class="player-badge">
                         <span class="player-count">0</span>
-                        <span class="player-badge-label">joueurs</span>
+                        <span class="player-badge-label">JOUEURS</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 2 : Version modpack -->
+            <!-- Card 2 : Instance & Modpack (PAR DÉFAUT) -->
             <div class="info-card card-version">
-                <div class="card-label">Modpack</div>
-                <div class="card-value">1.21.1</div>
-                <div class="card-meta">NeoForge</div>
+                <div class="card-header-row">
+                    <span class="card-label">INSTANCE SÉLECTIONNÉE</span>
+                    <span class="card-badge-default">PAR DÉFAUT</span>
+                </div>
+                <div class="card-value instance-name-display">DestinEvent</div>
+                <div class="card-meta">1.21.1 • NeoForge</div>
             </div>
 
-            <!-- Card 3 : Actualités / fichiers -->
+            <!-- Card 3 : Mises à Jour & News -->
             <div class="info-card card-news-count">
-                <div class="card-label">Actualités</div>
-                <div class="card-value news-count-value">—</div>
-                <div class="card-meta">dernières mises à jour</div>
+                <div class="card-header-row">
+                    <span class="card-label">ACTUALITÉS</span>
+                    <span class="card-badge-info">SYNC</span>
+                </div>
+                <div class="card-value">Saison En Cours</div>
+                <div class="card-meta">Système de jeu actif</div>
             </div>
         </div>
 
-        <!-- ── ZONE BASSE : NEWS + PROFIL ───────────────── -->
+        <!-- ── ZONE BASSE : NEWS + PANNEAU PROFIL & PLAY ── -->
         <div class="bottom-zone">
 
-            <!-- Flux actualités -->
+            <!-- Flux d'actualités -->
             <div class="news-zone">
-                <div class="news-zone-title">Actualités</div>
+                <div class="news-zone-header">
+                    <span class="news-zone-title">FLUX D'INFORMATIONS</span>
+                    <span class="news-zone-sub">RÉCENTES MISES À JOUR</span>
+                </div>
                 <div class="news-list content-scroll"></div>
             </div>
 
-            <!-- Panneau profil + bouton JOUER -->
+            <!-- Panneau Profil + Bouton JOUER Pro -->
             <div class="profile-play-panel">
 
-                <!-- Avatar + pseudo -->
+                <!-- Block Profil Player -->
                 <div class="profile-block">
-                    <div class="player-head"></div>
+                    <div class="player-head-wrapper">
+                        <div class="player-head"></div>
+                    </div>
                     <div class="profile-infos-home">
-                        <div class="profile-pseudo-home">—</div>
-                        <div class="profile-type-home">Joueur</div>
+                        <div class="profile-pseudo-home">Joueur</div>
+                        <div class="profile-type-home">SURVIVANT</div>
                     </div>
                 </div>
 
-                <!-- Socials -->
+                <!-- Réseaux sociaux -->
                 <div class="social-tab">
                     <div class="social-list content-scroll">
-                        <div data-url="https://discord.gg/e9q7Yr2cuQ" class="social-block">
+                        <div data-url="https://discord.gg/e9q7Yr2cuQ" class="social-block" title="Discord">
                             <div class="icon-discord icon-social"></div>
                         </div>
-                        <div data-url="https://github.com/gimovetv" class="social-block">
+                        <div data-url="https://github.com/gimovetv" class="social-block" title="GitHub">
                             <div class="icon-github icon-social"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bouton jouer + sélecteur instance -->
+                <!-- Zone Lancement & Instance -->
                 <div class="play-zone">
+                    <div class="instance-bar-label">
+                        <span class="instance-dot"></span>
+                        <span class="instance-name-display">DestinEvent</span>
+                    </div>
+
                     <div class="play-instance">
                         <button class="play-btn">JOUER</button>
-                        <div class="instance-select icon-arrow"></div>
+                        <div class="instance-select icon-arrow" title="Changer d'instance"></div>
                     </div>
+
                     <div class="info-starting-game">
-                        <div class="info-starting-game-text">Vérification</div>
+                        <div class="info-starting-game-text">Vérification des fichiers...</div>
                         <progress value="0" max="0" class="progress-bar"></progress>
                     </div>
                 </div>
@@ -139,12 +172,12 @@
     </div><!-- /main-content -->
 
     <!-- ══════════════════════════════════════════════════════
-         POPUP SÉLECTION D'INSTANCE (logique JS inchangée)
+         POPUP SÉLECTION D'INSTANCE (FONCTIONNEL)
     ═══════════════════════════════════════════════════════ -->
     <div class="instance-popup">
         <div class="instances-tab">
             <div class="close-popup icon-close"></div>
-            <p>Choisissez votre instance...</p>
+            <p>Choisissez votre instance</p>
             <div class="instances-List"></div>
         </div>
     </div>

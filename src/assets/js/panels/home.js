@@ -118,23 +118,33 @@ class Home {
             instanceBTN.style.paddingRight = '0'
         }
 
-        if (!instanceSelect) {
-            let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-            let configClient = await this.db.readData('configClient')
-            configClient.instance_select = newInstanceSelect.name
-            instanceSelect = newInstanceSelect.name
-            await this.db.updateData('configClient', configClient)
+        const updateInstanceUI = (name) => {
+            let instanceNameElems = document.querySelectorAll('.instance-name-display');
+            instanceNameElems.forEach(el => el.textContent = name || 'DestinEvent');
         }
+
+        if (!instanceSelect) {
+            let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
+            let configClient = await this.db.readData('configClient')
+            if (newInstanceSelect) {
+                configClient.instance_select = newInstanceSelect.name
+                instanceSelect = newInstanceSelect.name
+                await this.db.updateData('configClient', configClient)
+            }
+        }
+
+        updateInstanceUI(instanceSelect);
 
         for (let instance of instancesList) {
             if (instance.whitelistActive) {
                 let whitelist = instance.whitelist.find(whitelist => whitelist == auth?.name)
                 if (whitelist !== auth?.name) {
                     if (instance.name == instanceSelect) {
-                        let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
+                        let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
                         let configClient = await this.db.readData('configClient')
                         configClient.instance_select = newInstanceSelect.name
                         instanceSelect = newInstanceSelect.name
+                        updateInstanceUI(instanceSelect);
                         setStatus(newInstanceSelect.status)
                         await this.db.updateData('configClient', configClient)
                     }
@@ -157,9 +167,10 @@ class Home {
                 await this.db.updateData('configClient', configClient)
                 instanceSelect = instancesList.filter(i => i.name == newInstanceSelect)
                 instancePopup.style.display = 'none'
+                updateInstanceUI(newInstanceSelect);
                 let instance = await config.getInstanceList()
                 let options = instance.find(i => i.name == configClient.instance_select)
-                await setStatus(options.status)
+                if (options) await setStatus(options.status)
             }
         })
 
