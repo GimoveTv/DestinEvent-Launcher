@@ -1,56 +1,146 @@
 <div class="container">
-    <div class="status-server">
-        <img class="server-status-icon" src="assets/images/icon/icon.png">
-        <div class="server-status-infos">
-            <div class="server-status-name">Minecraft</div>
-            <div class="server-status-text">operationeel - 0 ms</div>
-        </div>
-        <div class="status-player-count">
-            <div class="player-count">0</div>
-        </div>
-    </div>
 
-    <div class="home-bottom">
-        <div class="new-tab">
-            <div class="titre-tab-new">Actualités</div>
-            <div class="news-list content-scroll"></div>
+    <!-- ══════════════════════════════════════════════════════
+         SIDEBAR GAUCHE — Navigation verticale
+    ═══════════════════════════════════════════════════════ -->
+    <nav class="sidebar-nav">
+        <div class="sidebar-logo">
+            <img class="sidebar-icon-img" src="assets/images/icon/icon.png" alt="DE">
         </div>
-        <div class="social-tab">
-            <div class="social-list content-scroll">
-                <div data-url="https://discord.gg/e9q7Yr2cuQ" class="social-block">
-                    <div class="icon-discord icon-social"></div>
+
+        <ul class="sidebar-links">
+            <li class="sidebar-item active-nav" id="nav-home" title="Accueil">
+                <span class="sidebar-nav-icon icon-monitor"></span>
+            </li>
+            <li class="sidebar-item" id="nav-news" title="Actualités">
+                <span class="sidebar-nav-icon nav-news-icon">&#9719;</span>
+            </li>
+        </ul>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-item settings-btn" title="Paramètres">
+                <span class="sidebar-nav-icon icon-settings"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══════════════════════════════════════════════════════
+         ZONE PRINCIPALE
+    ═══════════════════════════════════════════════════════ -->
+    <div class="main-content">
+
+        <!-- ── BANDEAU SUPÉRIEUR ────────────────────────── -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <span class="top-bar-title">DestinEvent</span>
+                <span class="top-bar-subtitle">Launcher</span>
+            </div>
+            <div class="top-bar-right">
+                <div class="top-bar-notif" title="Notifications">
+                    <span class="notif-dot"></span>
                 </div>
+            </div>
+        </header>
 
-                <div data-url="https://github.com/luuxis" class="social-block">
-                    <div class="icon-github icon-social"></div>
-                </div>
-
-                <div data-url="https://www.youtube.com/LuuxisHD" class="social-block">
-                    <div class="icon-youtube icon-social"></div>
+        <!-- ── BANNIÈRE HÉRO ────────────────────────────── -->
+        <div class="hero-banner">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <img class="hero-logo" src="assets/images/icon/icon.png" alt="DestinEvent">
+                <div class="hero-text">
+                    <div class="hero-name">DestinEvent</div>
+                    <div class="hero-tagline">Un destin écrit d'avance</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="sidebar">
-        <div class="player-options">
-            <div class="player-head"></div>
+        <!-- ── CARDS D'INFORMATION ──────────────────────── -->
+        <div class="info-cards">
+
+            <!-- Card 1 : Statut serveur -->
+            <div class="info-card card-server">
+                <div class="card-label">Serveur</div>
+                <div class="card-value server-status-name">—</div>
+                <div class="card-status-row">
+                    <div class="status-dot-wrapper status-player-count">
+                        <span class="status-dot"></span>
+                        <span class="server-status-text">Chargement...</span>
+                    </div>
+                    <div class="player-badge">
+                        <span class="player-count">0</span>
+                        <span class="player-badge-label">joueurs</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 : Version modpack -->
+            <div class="info-card card-version">
+                <div class="card-label">Modpack</div>
+                <div class="card-value">1.21.1</div>
+                <div class="card-meta">NeoForge</div>
+            </div>
+
+            <!-- Card 3 : Actualités / fichiers -->
+            <div class="info-card card-news-count">
+                <div class="card-label">Actualités</div>
+                <div class="card-value news-count-value">—</div>
+                <div class="card-meta">dernières mises à jour</div>
+            </div>
         </div>
 
-        <div class="play-elements">
-            <div class="play-instance">
-                <button class="play-btn">Jouer</button>
-                <div class="instance-select icon-arrow"></div>
+        <!-- ── ZONE BASSE : NEWS + PROFIL ───────────────── -->
+        <div class="bottom-zone">
+
+            <!-- Flux actualités -->
+            <div class="news-zone">
+                <div class="news-zone-title">Actualités</div>
+                <div class="news-list content-scroll"></div>
             </div>
-            <div class="info-starting-game">
-                <div class="info-starting-game-text">Connexion...</div>
-                <progress value="0" max="0" class="progress-bar"></progress>
+
+            <!-- Panneau profil + bouton JOUER -->
+            <div class="profile-play-panel">
+
+                <!-- Avatar + pseudo -->
+                <div class="profile-block">
+                    <div class="player-head"></div>
+                    <div class="profile-infos-home">
+                        <div class="profile-pseudo-home">—</div>
+                        <div class="profile-type-home">Joueur</div>
+                    </div>
+                </div>
+
+                <!-- Socials -->
+                <div class="social-tab">
+                    <div class="social-list content-scroll">
+                        <div data-url="https://discord.gg/e9q7Yr2cuQ" class="social-block">
+                            <div class="icon-discord icon-social"></div>
+                        </div>
+                        <div data-url="https://github.com/gimovetv" class="social-block">
+                            <div class="icon-github icon-social"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bouton jouer + sélecteur instance -->
+                <div class="play-zone">
+                    <div class="play-instance">
+                        <button class="play-btn">JOUER</button>
+                        <div class="instance-select icon-arrow"></div>
+                    </div>
+                    <div class="info-starting-game">
+                        <div class="info-starting-game-text">Vérification</div>
+                        <progress value="0" max="0" class="progress-bar"></progress>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <div class="settings-btn icon-settings"></div>
-    </div>
+    </div><!-- /main-content -->
 
+    <!-- ══════════════════════════════════════════════════════
+         POPUP SÉLECTION D'INSTANCE (logique JS inchangée)
+    ═══════════════════════════════════════════════════════ -->
     <div class="instance-popup">
         <div class="instances-tab">
             <div class="close-popup icon-close"></div>
@@ -58,4 +148,5 @@
             <div class="instances-List"></div>
         </div>
     </div>
+
 </div>
