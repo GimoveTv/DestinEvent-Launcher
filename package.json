@@ -1,18 +1,18 @@
 {
-    "name": "Selvania-Launcher",
-    "preductname": "Selvania Launcher",
-    "version": "2.2.2",
-    "description": "Launcher Mincraft pour le serveur Selvania",
+    "name": "DestinEvent-Launcher",
+    "preductname": "DestinEvent Launcher",
+    "version": "0.0.1",
+    "description": "Launcher Minecraft pour le serveur DestinEvent",
     "main": "src/app.js",
     "author": {
-        "name": "luuxis, Inc.",
+        "name": "GimoveTv",
         "email": "contact@luuxis.fr",
-        "url": "https://github.com/luuxis"
+        "url": "https://github.com/gimovetv"
     },
-    "url": "http://luuxcraft.fr/api/user/bb8f5247-1d38-41bb-ab6d-3200471a06b2",
+    "url": "server",
     "scripts": {
-        "start": "cross-env-shell NODE_ENV=dev electron .",
-        "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
+        "start": "cross-env NODE_ENV=dev electron .",
+        "dev": "cross-env DEV_TOOL=open nodemon --exec npm start",
         "build": "node build.js --obf=true --build=platform",
         "icon": "node build.js --icon"
     },
@@ -39,6 +39,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/luuxis/Selvania-Launcher.git"
-    }
+        "url": "git+https://github.com/GimoveTv/DestinEvent-Launcher.git"
+    },
+    "allowScripts": {}
 }
