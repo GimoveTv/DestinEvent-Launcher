@@ -1,17 +1,47 @@
+/* ============================================================
+   login.css — Panel d'authentification
+   DestinEvent Launcher — Thriller/Horror Theme
+   ============================================================ */
+
 .login .container {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
+    /* Fond de la scène login : vignette rouge centrale */
+    background: radial-gradient(ellipse at 50% 80%, rgba(180, 24, 42, 0.1) 0%, transparent 65%);
 }
+
+/* ── Card de login ──────────────────────────────────────────── */
 
 .login-tabs {
     position: absolute;
-    padding: 15px;
-    background: var(--background);
-    border-radius: 15px;
+    padding: 32px 36px;
+    background: var(--bg-surface, #201D3F);
+    border-radius: 2px;
     text-align: center;
-    min-width: 40%;
+    min-width: 380px;
+
+    /* Bordure rouge gauche — signature thriller */
+    border-left: 3px solid var(--red-primary, #B4182A);
+    border-top: 1px solid rgba(180, 24, 42, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+    box-shadow:
+        -6px 0 24px rgba(180, 24, 42, 0.2),
+        0 24px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* Ligne décorative rouge en haut de la card */
+.login-tabs::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -3px;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--red-primary, #B4182A), transparent);
 }
 
 .login-home,
@@ -21,30 +51,105 @@
     display: none;
 }
 
+/* ── Titre de la card ───────────────────────────────────────── */
+
 .login-text {
-    font-size: 1.3rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-primary, #EDEAE0);
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(180, 24, 42, 0.2);
 }
+
+/* ── Options (boutons) ──────────────────────────────────────── */
+
+.login-options {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* ── Boutons connect / cancel ───────────────────────────────── */
 
 .connect,
 .cancel {
     background: none;
-    color: var(--color);
-    border: solid 4px var(--element-color);
-    border-radius: 10px;
-    padding: 0.3rem 4rem;
-    font-size: inherit;
-    font-weight: bold;
-    margin: 15px 10px;
+    color: var(--text-primary, #EDEAE0);
+    border: 1px solid var(--red-primary, #B4182A);
+    border-radius: 2px;
+    padding: 0.5rem 2.8rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+    /* Signature : trait rouge gauche */
+    box-shadow: -2px 0 0 var(--red-primary, #B4182A);
+}
+
+.connect:hover {
+    background-color: var(--red-primary, #B4182A);
+    box-shadow: -2px 0 0 var(--red-accent, #E0263A), 0 0 20px rgba(180, 24, 42, 0.4);
+}
+
+.cancel {
+    border-color: rgba(180, 24, 42, 0.35);
+    color: var(--text-muted, #9A9588);
+    box-shadow: -2px 0 0 rgba(180, 24, 42, 0.3);
+}
+
+.cancel:hover {
+    background-color: rgba(180, 24, 42, 0.1);
+    color: var(--text-primary, #EDEAE0);
+    box-shadow: -2px 0 0 var(--red-primary, #B4182A);
+}
+
+/* ── Champs de saisie ───────────────────────────────────────── */
+
+.input-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
 }
 
 .input-login .email,
 .input-login .password,
 .A2F {
-    color: var(--color);
-    background: none;
-    border: solid 2px var(--element-color);
-    border-radius: 30px;
-    width: 50%;
-    padding: 0.4rem 1rem;
-    margin-top: 10px;
+    color: var(--text-primary, #EDEAE0);
+    background: rgba(13, 11, 31, 0.6);
+    border: none;
+    border-bottom: 1px solid rgba(180, 24, 42, 0.4);
+    border-radius: 0;
+    width: 80%;
+    padding: 0.55rem 0.8rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.input-login .email::placeholder,
+.input-login .password::placeholder,
+.A2F::placeholder {
+    color: var(--text-dim, #5C5850);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+}
+
+.input-login .email:focus,
+.input-login .password:focus,
+.A2F:focus {
+    background: rgba(26, 22, 51, 0.8);
+    border-bottom-color: var(--red-accent, #E0263A);
+    outline: none;
 }

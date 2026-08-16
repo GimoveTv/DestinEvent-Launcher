@@ -9,7 +9,7 @@
         "email": "contact@luuxis.fr",
         "url": "https://github.com/gimovetv"
     },
-    "url": "server",
+    "url": "https://destinevent.alwaysdata.net/",
     "scripts": {
         "start": "cross-env NODE_ENV=dev electron .",
         "dev": "cross-env DEV_TOOL=open nodemon --exec npm start",

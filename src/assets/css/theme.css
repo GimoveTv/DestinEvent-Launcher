@@ -1,24 +1,56 @@
+/* ============================================================
+   DestinEvent Launcher — Thriller/Horror Theme
+   Palette : Rouge sang sur bleu nuit profond
+   ============================================================ */
+
+:root {
+    /* Couleurs de la palette principale */
+    --red-primary:   #B4182A;
+    --red-accent:    #E0263A;
+    --red-glow:      rgba(180, 24, 42, 0.35);
+    --red-dim:       rgba(180, 24, 42, 0.15);
+
+    --bg-deepest:    #0D0B1F;
+    --bg-dark:       #12102A;
+    --bg-mid:        #1A1633;
+    --bg-surface:    #201D3F;
+
+    --text-primary:  #EDEAE0;
+    --text-muted:    #9A9588;
+    --text-dim:      #5C5850;
+
+    --border-dark:   rgba(180, 24, 42, 0.25);
+    --border-accent: rgba(224, 38, 58, 0.6);
+
+    --shadow-red:    0 4px 32px rgba(180, 24, 42, 0.4);
+    --shadow-dark:   0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* ── Classes appliquées par le JS de thème ─────────────────── */
+
 .global {
-    --element-color: #00bd7a;
-    --transition: all 0.5s cubic-bezier(1, 0.46, 0, 1.29);
-    --dark-color: #292929;
-    --light-color: rgb(245, 245, 245);
+    --element-color:         var(--red-primary);
+    --transition:            all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --dark-color:            var(--bg-deepest);
+    --light-color:           var(--text-primary);
 }
 
+/* Le launcher force toujours le mode sombre — on garde quand même .dark/.light */
 .dark {
-    --color: #F5F5F5;
-    --background: #292929;
-    --background-element: #424242;
-    --background-transparent: #2c2c2ccc;
-    --shadow: rgba(25, 25, 25, 0.7);
-    --svg-color: brightness(0) saturate(100%) invert(100%) sepia(55%) saturate(23%) hue-rotate(236deg) brightness(108%) contrast(92%);
+    --color:                 var(--text-primary);
+    --background:            var(--bg-dark);
+    --background-element:    var(--bg-surface);
+    --background-transparent: rgba(18, 16, 42, 0.88);
+    --shadow:                rgba(0, 0, 0, 0.7);
+    --svg-color:             brightness(0) saturate(100%) invert(92%) sepia(5%) saturate(300%) hue-rotate(10deg) brightness(98%) contrast(88%);
 }
 
+/* Thème clair — gardé fonctionnel, même direction sombre intentionnelle */
 .light {
-    --color: #151515;
-    --background: rgb(245, 245, 245);
-    --background-element: #c2c2c2;
-    --background-transparent: rgba(204, 204, 204, 0.8);
-    --shadow: rgba(208, 208, 208, 0.7);
-    --svg-color: brightness(0) saturate(100%) invert(0%) sepia(5%) saturate(1719%) hue-rotate(357deg) brightness(94%) contrast(84%);
+    --color:                 var(--bg-deepest);
+    --background:            #E8E4D8;
+    --background-element:    #D4D0C4;
+    --background-transparent: rgba(200, 196, 184, 0.88);
+    --shadow:                rgba(120, 110, 100, 0.4);
+    --svg-color:             brightness(0) saturate(100%) invert(8%) sepia(20%) saturate(1200%) hue-rotate(210deg) brightness(90%) contrast(95%);
 }

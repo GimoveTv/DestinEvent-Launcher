@@ -1,10 +1,29 @@
 @import "font.css";
 @import 'theme.css';
 
+/* ============================================================
+   index.css — Splash / Update Window
+   DestinEvent Launcher — Thriller/Horror Theme
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    background-color: var(--background);
-    font-family: "Poppins";
-    letter-spacing: 0px;
+    width: 400px;
+    height: 500px;
+    overflow: hidden;
+    background: var(--bg-deepest, #0D0B1F);
+    font-family: "Poppins", sans-serif;
+    letter-spacing: 0.02em;
+
+    /* Texture de fond — vignette et grain subtil */
+    background-image:
+        radial-gradient(ellipse at 50% 120%, rgba(180, 24, 42, 0.18) 0%, transparent 65%),
+        radial-gradient(ellipse at 50% -20%, rgba(26, 22, 51, 0.9) 0%, transparent 60%);
 }
 
 img {
@@ -12,15 +31,22 @@ img {
     user-select: none;
 }
 
+/* ── Logo / Icon splash ─────────────────────────────────────── */
+
 .splash {
     position: absolute;
     top: 180px;
     left: 50%;
     transform: translate(-50%);
-    width: 140px;
-    height: 140px;
-    transition: opacity .3s, top 1.5s;
+    width: 130px;
+    height: 130px;
+    transition: opacity 0.4s ease, top 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
+
+    /* Pas de border-radius fort — forme angulaire thriller */
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(180, 24, 42, 0.5), 0 0 80px rgba(180, 24, 42, 0.2);
+    filter: contrast(1.05) brightness(0.95);
 }
 
 .splash.opacity {
@@ -28,20 +54,28 @@ img {
 }
 
 .splash.translate {
-    top: 129px;
+    top: 112px;
 }
+
+/* ── Splash quotes ──────────────────────────────────────────── */
 
 .splash-message {
     position: absolute;
     top: 289px;
-    left: 0px;
+    left: 0;
     width: 400px;
-    font: normal normal bold 19px/29px Poppins;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
     text-align: center;
-    letter-spacing: 0px;
-    transition: opacity 1.5s;
-    color: var(--color);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--red-accent, #E0263A);
+    transition: opacity 1.2s ease;
     opacity: 0;
+
+    /* Effet de lueur rouge sur le texte */
+    text-shadow: 0 0 12px rgba(224, 38, 58, 0.6);
 }
 
 .splash-message.opacity {
@@ -50,67 +84,90 @@ img {
 
 .splash-author {
     position: absolute;
-    top: 326px;
-    left: 0px;
+    top: 320px;
+    left: 0;
     width: 400px;
     text-align: center;
-    transition: opacity 1.5s;
-    font: normal normal normal 9px/13px Poppins;
-    color: var(--color);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted, #9A9588);
+    transition: opacity 1.2s ease;
     opacity: 0;
 }
 
 .splash-author .author {
-    font: normal normal bold 9px/13px Poppins;
+    font-weight: 700;
+    color: var(--text-primary, #EDEAE0);
 }
 
 .splash-author.opacity {
     opacity: 1;
 }
 
+/* ── Message de statut ──────────────────────────────────────── */
+
 .message {
     position: absolute;
     top: 347px;
-    left: 0px;
+    left: 0;
     width: 400px;
     text-align: center;
-    transition: opacity 1.5s;
-    font: normal normal bold 18px/27px Poppins;
-    color: var(--color);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-primary, #EDEAE0);
+    transition: opacity 1.2s ease;
     opacity: 0;
-}
-
-.download-update {
-    position: absolute;
-    left: 25%;
-    margin-top: 20px;
-    width: 200px;
-    font: normal normal bold 22px / 45px Poppins;
-    color: var(--color);
-    border: 2px solid var(--color);
-    border-radius: 15px;
-    transition: background-color .2s, color .2s;
-}
-
-.download-update:hover {
-    background-color: var(--color);
-    color: var(--background);
-    cursor: pointer;
+    line-height: 1.6;
 }
 
 .message.opacity {
     opacity: 1;
 }
 
+/* ── Bouton de téléchargement ───────────────────────────────── */
+
+.download-update {
+    position: relative;
+    display: inline-block;
+    margin-top: 18px;
+    padding: 6px 0;
+    width: 180px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-primary, #EDEAE0);
+    border: 1px solid var(--red-primary, #B4182A);
+    border-radius: 2px;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+
+    /* Trait latéral gauche rouge — signature thriller */
+    box-shadow: -3px 0 0 var(--red-primary, #B4182A);
+}
+
+.download-update:hover {
+    background-color: var(--red-primary, #B4182A);
+    color: var(--text-primary, #EDEAE0);
+    box-shadow: -3px 0 0 var(--red-accent, #E0263A), 0 0 20px rgba(180, 24, 42, 0.5);
+    cursor: pointer;
+}
+
+/* ── Progress bar ───────────────────────────────────────────── */
+
 .progress {
     position: absolute;
-    top: 410px;
-    left: 106px;
-    width: 189px;
-    height: 10px;
+    top: 428px;
+    left: 80px;
+    width: 240px;
+    height: 3px;
     appearance: none;
-    transition: opacity .2s;
+    transition: opacity 0.3s ease;
     opacity: 0;
+    border: none;
+    border-radius: 0;
 }
 
 .show {
@@ -118,12 +175,27 @@ img {
 }
 
 .progress::-webkit-progress-bar {
-    background-color: var(--background);
-    border: solid 1px var(--element-color);
-    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: none;
+    border-radius: 0;
 }
 
 .progress::-webkit-progress-value {
-    background-color: var(--element-color);
-    border-radius: 10px;
+    background: linear-gradient(90deg, var(--red-primary, #B4182A), var(--red-accent, #E0263A));
+    border-radius: 0;
+    transition: width 0.3s ease;
+
+    /* Pulsation lumineuse sur la barre */
+    box-shadow: 0 0 8px rgba(224, 38, 58, 0.7);
+}
+
+/* ── Ligne décorative séparatrice en bas ────────────────────── */
+body::after {
+    content: '';
+    position: absolute;
+    bottom: 55px;
+    left: 40px;
+    right: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(180, 24, 42, 0.4), transparent);
 }

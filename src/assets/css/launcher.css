@@ -4,22 +4,35 @@
 @import 'panels/home.css';
 @import 'panels/settings.css';
 
+/* ============================================================
+   launcher.css — Fenêtre principale
+   DestinEvent Launcher — Thriller/Horror Theme
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+    outline: none;
+}
+
 body {
     margin: 0;
     padding: 0;
     user-select: none;
-    color: var(--color);
-    font-family: 'Poppins';
-    font-weight: bolder;
+    color: var(--color, #EDEAE0);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    background: var(--bg-deepest, #0D0B1F);
+    overflow: hidden;
+
+    /* Fond ambiant : gradient bleu nuit + touche rouge en bas */
+    background-image:
+        radial-gradient(ellipse at 50% 100%, rgba(180, 24, 42, 0.12) 0%, transparent 60%),
+        linear-gradient(170deg, #12102A 0%, #0D0B1F 50%, #1A1633 100%);
 }
 
 img {
     -webkit-user-drag: none;
     user-select: none;
-}
-
-* {
-    outline: none;
 }
 
 input::-webkit-outer-spin-button,
@@ -33,39 +46,45 @@ input::-webkit-inner-spin-button {
 }
 
 .content-scroll::-webkit-scrollbar {
-    width: 0;
+    width: 3px;
 }
+
+.content-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+    background: var(--red-primary, #B4182A);
+    border-radius: 0;
+}
+
+/* ── Dragbar (zone de déplacement de la fenêtre) ───────────── */
 
 .dragbar {
     position: fixed;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 26px;
     -webkit-app-region: drag;
-    z-index: 11;
+    z-index: 100;
+
+    /* Fine ligne rouge en haut : signature visuelle */
+    border-top: 2px solid rgba(180, 24, 42, 0.6);
 }
+
+/* ── Contrôles de fenêtre — Darwin (macOS) ──────────────────── */
 
 .darwin .frame {
     background: transparent;
     position: fixed;
-    top: 0px;
-    z-index: 11;
+    top: 0;
+    z-index: 110;
     -webkit-app-region: no-drag;
     display: none;
 }
 
-.other .frame {
-    background: transparent;
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    z-index: 11;
-    -webkit-app-region: no-drag;
-    display: none;
-}
-
-.frame.hide {
+.darwin .frame.hide {
     display: block;
 }
 
@@ -74,27 +93,7 @@ input::-webkit-inner-spin-button {
     display: table-cell;
     width: 20px;
     height: 26px;
-    transition: color .2s, background-color .2s;
-}
-
-.other .button-frame {
-    position: relative;
-    display: table-cell;
-    width: 30px;
-    height: 26px;
-    transition: color .2s, background-color .2s;
-    color: black;
-    cursor: pointer;
-}
-
-.button-frame:before {
-    position: absolute;
-    top: 6px;
-    left: 8px;
-    width: 14px;
-    height: 14px;
-    font-size: 14px;
-    color: #f8f9f9;
+    transition: filter 0.2s ease;
 }
 
 .darwin-icon-minimize,
@@ -108,58 +107,121 @@ input::-webkit-inner-spin-button {
 .darwin-icon-close:before {
     content: '';
     position: absolute;
+    top: 7px;
+    left: 4px;
     border-radius: 50%;
     width: 12px;
     height: 12px;
     cursor: pointer;
 }
 
-.darwin-icon-maximize:before {
-    background: #07d014;
+.darwin-icon-maximize:before { background: #2ECC40; }
+.darwin-icon-minimize:before { background: #FFDC00; }
+.darwin-icon-close:before    { background: var(--red-accent, #E0263A); }
+
+/* ── Contrôles de fenêtre — Windows/Linux ───────────────────── */
+
+.other .frame {
+    background: transparent;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 110;
+    -webkit-app-region: no-drag;
+    display: none;
 }
 
-.darwin-icon-minimize:before {
-    background: #ffbd2e;
+.other .frame.hide {
+    display: flex;
 }
 
-.darwin-icon-close:before {
-    background: #ff6047;
+.other .button-frame {
+    position: relative;
+    display: table-cell;
+    width: 38px;
+    height: 26px;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+    color: var(--text-primary, #EDEAE0);
 }
 
-.icon-close:hover {
-    background: #e21212;
+.button-frame:before {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    font-size: 13px;
+    color: var(--text-muted, #9A9588);
+    transition: color 0.15s ease;
 }
 
 .icon-minimize:hover,
 .icon-restore-down:hover,
 .icon-maximize:hover {
-    background-color: #0000009d;
+    background-color: rgba(237, 234, 224, 0.08);
 }
+
+.icon-minimize:hover:before,
+.icon-restore-down:hover:before,
+.icon-maximize:hover:before {
+    color: var(--text-primary, #EDEAE0);
+}
+
+.icon-close:hover {
+    background: var(--red-primary, #B4182A);
+}
+
+.icon-close:hover:before {
+    color: var(--text-primary, #EDEAE0);
+}
+
+/* ── Popup (messages système) ───────────────────────────────── */
 
 .popup {
     position: absolute;
     width: 100%;
     height: 100%;
-    z-index: 10;
+    z-index: 50;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background: rgba(13, 11, 31, 0.7);
+    backdrop-filter: blur(4px);
 }
 
 .popup-tab {
-    width: 40%;
-    padding: 15px;
-    background: var(--background);
-    border-radius: 15px;
-    z-index: 10;
+    width: 42%;
+    padding: 24px 28px;
+    background: var(--bg-surface, #201D3F);
+    border-radius: 2px;
+    border: 1px solid rgba(180, 24, 42, 0.3);
+    box-shadow: 0 0 40px rgba(180, 24, 42, 0.25), 0 20px 60px rgba(0, 0, 0, 0.8);
+
+    /* Trait rouge gauche */
+    border-left: 3px solid var(--red-primary, #B4182A);
 }
 
 .popup-title {
     text-align: center;
-    font-size: 2rem;
-    border-bottom: solid 4px var(--color);
-    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-primary, #EDEAE0);
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid rgba(180, 24, 42, 0.3);
+}
+
+.popup-content {
+    font-size: 0.85rem;
+    color: var(--text-muted, #9A9588);
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 16px;
 }
 
 .popup-options {
@@ -170,14 +232,26 @@ input::-webkit-inner-spin-button {
 
 .popup-button {
     background: none;
-    color: var(--color);
-    border: solid 4px var(--element-color);
-    border-radius: 10px;
-    padding: 0.3rem 4rem;
-    font-size: inherit;
-    font-weight: bold;
-    margin: 15px 10px;
+    color: var(--text-primary, #EDEAE0);
+    border: 1px solid var(--red-primary, #B4182A);
+    border-radius: 2px;
+    padding: 0.4rem 3rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 12px 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: -2px 0 0 var(--red-primary, #B4182A);
 }
+
+.popup-button:hover {
+    background: var(--red-primary, #B4182A);
+    box-shadow: -2px 0 0 var(--red-accent, #E0263A), 0 0 16px rgba(180, 24, 42, 0.4);
+}
+
+/* ── Panels (gestion des vues) ──────────────────────────────── */
 
 .panel {
     position: absolute;
@@ -186,6 +260,7 @@ input::-webkit-inner-spin-button {
     opacity: 0;
     z-index: 0;
     pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
 .active {
