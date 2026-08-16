@@ -74,14 +74,20 @@ async function accountSelect(data) {
 
     if (activeAccount) activeAccount.classList.toggle('account-select');
     if (account) account.classList.add('account-select');
+    
     let pseudoHome = document.querySelector('.profile-pseudo-home');
     if (pseudoHome && data?.name) pseudoHome.textContent = data.name;
+
+    let pseudoDisplay = document.querySelector('.profile-pseudo-display');
+    if (pseudoDisplay && data?.name) pseudoDisplay.textContent = data.name;
+
     if (data?.profile?.skins[0]?.base64) headplayer(data.profile.skins[0].base64);
 }
 
 async function headplayer(skinBase64) {
     let skin = await new skin2D().creatHeadTexture(skinBase64);
-    document.querySelector(".player-head").style.backgroundImage = `url(${skin})`;
+    let heads = document.querySelectorAll('.player-head, .profile-player-head');
+    heads.forEach(h => h.style.backgroundImage = `url(${skin})`);
 }
 
 async function setStatus(opt) {

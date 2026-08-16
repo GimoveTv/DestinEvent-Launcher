@@ -5,13 +5,16 @@
     ═══════════════════════════════════════════════════════ -->
     <nav class="sidebar-nav">
         <div class="sidebar-logo">
-            <img class="sidebar-icon-img" src="assets/images/icon/icon.png" alt="Logo">
+            <img class="sidebar-icon-img" src="assets/images/icon/icon.png" alt="DE">
             <div class="sidebar-logo-glow"></div>
         </div>
 
         <ul class="sidebar-links">
             <li class="sidebar-item active-nav" id="nav-home" title="Accueil">
                 <span class="sidebar-nav-icon icon-monitor"></span>
+            </li>
+            <li class="sidebar-item" id="nav-profile" title="Espace Joueur">
+                <span class="sidebar-nav-icon">&#128100;</span>
             </li>
             <li class="sidebar-item" id="nav-news" title="Acte">
                 <span class="sidebar-nav-icon">&#9719;</span>
@@ -67,7 +70,7 @@
             </div>
         </div>
 
-        <!-- ── 3 CARDS D'INFORMATION CÔTE À CÔTE ───────── -->
+        <!-- ── CARDS D'INFORMATION HAUTE PRÉCISION ─────── -->
         <div class="info-cards">
 
             <!-- Card 1 : Statut Serveur -->
@@ -89,7 +92,7 @@
                 </div>
             </div>
 
-            <!-- Card 2 : Instance & Modpack -->
+            <!-- Card 2 : Instance & Modpack (PAR DÉFAUT) -->
             <div class="info-card card-version">
                 <div class="card-header-row">
                     <span class="card-label">INSTANCE SÉLECTIONNÉE</span>
@@ -110,7 +113,7 @@
             </div>
         </div>
 
-        <!-- ── ZONE BASSE : ACTE (NEWS) + ESPACE JOUEUR ──── -->
+        <!-- ── ZONE BASSE : ACTE + ESPACE JOUEUR DÉDIÉ ──── -->
         <div class="bottom-zone">
 
             <!-- Flux d'informations (Acte) -->
@@ -122,34 +125,40 @@
                 <div class="news-list content-scroll"></div>
             </div>
 
-            <!-- ESPACE JOUEUR & BOUTON JOUER -->
-            <div class="profile-play-panel">
+            <!-- ESPACE JOUEUR DÉDIÉ (PANNEAU COMPTE & LANCEMENT) -->
+            <div class="espace-joueur-card" id="espace-joueur">
 
                 <div class="espace-joueur-header">
                     <span class="espace-joueur-title">ESPACE JOUEUR</span>
+                    <span class="espace-joueur-badge">OFFICIEL</span>
                 </div>
 
-                <!-- Informations du joueur Minecraft -->
+                <!-- Block Joueur (Avatar 2D + Pseudo Minecraft) -->
                 <div class="profile-block">
                     <div class="player-head-wrapper">
                         <div class="player-head"></div>
+                        <div class="head-online-ring"></div>
                     </div>
                     <div class="profile-infos-home">
-                        <div class="profile-pseudo-label">COMPTE MINECRAFT</div>
+                        <div class="profile-pseudo-label">COMPTE MINECRAFT CONNECTÉ</div>
                         <div class="profile-pseudo-home">Chargement...</div>
+                        <div class="profile-type-home">SURVIVANT DESTINEVENT</div>
                     </div>
                 </div>
 
-                <!-- Accès au serveur (Autorisé / En attente) -->
+                <!-- Boîte d'Accès au Serveur (Autorisé / En attente) -->
                 <div class="server-access-box">
-                    <div class="access-label">ACCÈS AU SERVEUR</div>
+                    <div class="access-header-row">
+                        <span class="access-label">ACCÈS AU SERVEUR</span>
+                        <span class="access-sublabel">STATUT WHITELIST</span>
+                    </div>
                     <div class="access-status-badge access-authorized">
                         <span class="access-dot"></span>
                         <span class="access-status-text">Autorisé</span>
                     </div>
                 </div>
 
-                <!-- Zone Lancement & Instance -->
+                <!-- Zone de Lancement & Instance -->
                 <div class="play-zone">
                     <div class="instance-bar-label">
                         <span class="instance-dot"></span>
@@ -167,7 +176,8 @@
                     </div>
                 </div>
 
-            </div>
+            </div><!-- /espace-joueur-card -->
+
         </div>
 
     </div><!-- /main-content -->

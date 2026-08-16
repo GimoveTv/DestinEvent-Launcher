@@ -5,6 +5,7 @@
 // import panel
 import Login from './panels/login.js';
 import Home from './panels/home.js';
+import Profile from './panels/profile.js';
 import Settings from './panels/settings.js';
 
 // import modules
@@ -27,7 +28,7 @@ class Launcher {
         if (await this.config.error) return this.errorConnect()
         this.db = new database();
         await this.initConfigClient();
-        this.createPanels(Login, Home, Settings);
+        this.createPanels(Login, Home, Profile, Settings);
         this.startLauncher();
     }
 

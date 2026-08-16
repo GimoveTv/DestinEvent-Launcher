@@ -15,6 +15,10 @@ class Home {
         this.news()
         this.instancesSelect()
         document.querySelector('.settings-btn').addEventListener('click', e => changePanel('settings'))
+        let navProfile = document.querySelector('#nav-profile');
+        if (navProfile) {
+            navProfile.addEventListener('click', () => changePanel('profile'));
+        }
     }
 
     async news() {

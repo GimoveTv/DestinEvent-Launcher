@@ -1,5 +1,5 @@
 /* ============================================================
-   home.css — Écran d'accueil (Thriller/Horreur Pro)
+   home.css — Écran d'accueil avec Espace Joueur Pro
    DestinEvent Launcher
    ============================================================ */
 
@@ -15,8 +15,8 @@
     height: 100%;
     background: #080612;
     background-image:
-        radial-gradient(ellipse at 80% 90%, rgba(180, 24, 42, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 20% 10%, rgba(26, 22, 51, 0.8) 0%, transparent 50%);
+        radial-gradient(ellipse at 85% 85%, rgba(180, 24, 42, 0.14) 0%, transparent 60%),
+        radial-gradient(ellipse at 15% 15%, rgba(26, 22, 51, 0.85) 0%, transparent 50%);
     position: relative;
     padding-top: 26px;
     box-sizing: border-box;
@@ -89,7 +89,7 @@
     background: rgba(13, 11, 31, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 .sidebar-item:hover {
@@ -529,13 +529,13 @@
     color: #9A9588;
 }
 
-/* ── Zone Basse (Actes + Espace Joueur) ──────────────────────── */
+/* ── Zone Basse (News + Espace Joueur Card) ─────────────────── */
 
 .bottom-zone {
     display: flex;
     gap: 16px;
     flex: 1;
-    min-height: 180px;
+    min-height: 210px;
 }
 
 /* Flux d'informations (Acte) */
@@ -544,7 +544,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background: rgba(13, 11, 31, 0.4);
+    background: rgba(13, 11, 31, 0.45);
     padding: 16px;
     border-radius: 2px;
     border: 1px solid rgba(180, 24, 42, 0.2);
@@ -644,61 +644,93 @@
     font-weight: 800;
 }
 
-/* ── ESPACE JOUEUR & BOUTON JOUER AAA ───────────────────────── */
+/* =============================================================
+   3. ESPACE JOUEUR CARD (PANNEAU JOUEUR & LANCEMENT DÉDIÉ)
+   ============================================================= */
 
-.profile-play-panel {
-    width: 290px;
+.espace-joueur-card {
+    width: 310px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    background: rgba(31, 26, 58, 0.85);
-    backdrop-filter: blur(10px);
+    gap: 14px;
+    background: rgba(31, 26, 58, 0.88);
+    backdrop-filter: blur(12px);
     padding: 18px;
     border-radius: 2px;
-    border-left: 3px solid #B4182A;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 4px solid #B4182A;
+    border-top: 1px solid rgba(224, 38, 58, 0.3);
     border-right: 1px solid rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
     flex-shrink: 0;
 }
 
 .espace-joueur-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid rgba(180, 24, 42, 0.3);
-    padding-bottom: 6px;
+    padding-bottom: 8px;
 }
 
 .espace-joueur-title {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     font-weight: 900;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.25em;
     color: #E0263A;
     text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(224, 38, 58, 0.3);
+    text-shadow: 0 0 10px rgba(224, 38, 58, 0.4);
 }
 
+.espace-joueur-badge {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #EDEAE0;
+    background: rgba(180, 24, 42, 0.3);
+    padding: 2px 6px;
+    border-radius: 2px;
+    border: 1px solid rgba(224, 38, 58, 0.4);
+}
+
+/* Profil Joueur Block */
 .profile-block {
     display: flex;
     align-items: center;
     gap: 14px;
-    background: rgba(13, 11, 31, 0.5);
-    padding: 10px 12px;
+    background: rgba(13, 11, 31, 0.6);
+    padding: 12px 14px;
     border-radius: 2px;
-    border: 1px solid rgba(180, 24, 42, 0.2);
+    border: 1px solid rgba(180, 24, 42, 0.25);
 }
 
 .player-head-wrapper {
     position: relative;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
 }
 
 .player-head {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: 100%;
     border-radius: 2px;
     background: url('../../images/default/setve.png') no-repeat center / cover;
     image-rendering: pixelated;
     border: 1px solid #B4182A;
-    box-shadow: 0 0 12px rgba(180, 24, 42, 0.4);
+    box-shadow: 0 0 14px rgba(180, 24, 42, 0.4);
+}
+
+.head-online-ring {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: #3DBF6E;
+    border: 2px solid #0D0B1F;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #3DBF6E;
 }
 
 .profile-infos-home {
@@ -711,19 +743,27 @@
 .profile-pseudo-label {
     font-size: 0.58rem;
     font-weight: 800;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.16em;
     color: #5C5850;
     text-transform: uppercase;
 }
 
 .profile-pseudo-home {
-    font-size: 0.98rem;
-    font-weight: 800;
+    font-size: 1.05rem;
+    font-weight: 900;
     color: #EDEAE0;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.profile-type-home {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #E0263A;
 }
 
 /* Boîte d'Accès au Serveur */
@@ -731,17 +771,31 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: rgba(13, 11, 31, 0.5);
-    padding: 10px 12px;
+    background: rgba(13, 11, 31, 0.6);
+    padding: 10px 14px;
     border-radius: 2px;
-    border: 1px solid rgba(180, 24, 42, 0.2);
+    border: 1px solid rgba(180, 24, 42, 0.25);
+}
+
+.access-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .access-label {
-    font-size: 0.58rem;
+    font-size: 0.6rem;
     font-weight: 800;
     letter-spacing: 0.18em;
     color: #5C5850;
+    text-transform: uppercase;
+}
+
+.access-sublabel {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #9A9588;
     text-transform: uppercase;
 }
 
@@ -749,18 +803,18 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 2px;
-    font-size: 0.72rem;
+    font-size: 0.76rem;
     font-weight: 800;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 .access-authorized {
-    background: rgba(61, 191, 110, 0.12);
+    background: rgba(61, 191, 110, 0.15);
     color: #3DBF6E;
-    border: 1px solid rgba(61, 191, 110, 0.35);
+    border: 1px solid rgba(61, 191, 110, 0.4);
 }
 
 .access-authorized .access-dot {
@@ -772,9 +826,9 @@
 }
 
 .access-pending {
-    background: rgba(255, 159, 67, 0.12);
+    background: rgba(255, 159, 67, 0.15);
     color: #FF9F43;
-    border: 1px solid rgba(255, 159, 67, 0.35);
+    border: 1px solid rgba(255, 159, 67, 0.4);
 }
 
 .access-pending .access-dot {
