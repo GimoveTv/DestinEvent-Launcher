@@ -239,20 +239,20 @@ class Launcher {
             configClient = await this.db.readData('configClient')
             account_selected = configClient ? configClient.account_selected : null
 
-            if (!account_selected) {
-                let uuid = accounts[0].ID
-                if (uuid) {
-                    configClient.account_selected = uuid
-                    await this.db.updateData('configClient', configClient)
-                    accountSelect(uuid)
+            if (!accounts?.length) {
+                if (configClient) {
+                    configClient.account_selected = null
+                    await this.db.updateData('configClient', configClient);
                 }
-            }
-
-            if (!accounts.length) {
-                config.account_selected = null
-                await this.db.updateData('configClient', config);
                 popupRefresh.closePopup()
                 return changePanel("login");
+            }
+
+            let selectedAccount = accounts.find(a => a.ID == account_selected) || accounts[0];
+            if (selectedAccount) {
+                configClient.account_selected = selectedAccount.ID;
+                await this.db.updateData('configClient', configClient);
+                await accountSelect(selectedAccount);
             }
 
             popupRefresh.closePopup()

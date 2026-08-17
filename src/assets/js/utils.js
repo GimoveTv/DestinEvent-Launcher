@@ -73,8 +73,10 @@ async function addAccount(data) {
 }
 
 async function accountSelect(data) {
+    if (!data || typeof data !== 'object') return;
+
     let account = document.getElementById(`${data.ID}`);
-    let activeAccount = document.querySelector('.account-select')
+    let activeAccount = document.querySelector('.account-select');
 
     if (activeAccount) activeAccount.classList.toggle('account-select');
     if (account) account.classList.add('account-select');
@@ -88,16 +90,24 @@ async function accountSelect(data) {
     let uuidDisplay = document.querySelectorAll('.profile-uuid-display');
     uuidDisplay.forEach(el => { if (data?.uuid || data?.ID) el.textContent = data.uuid || data.ID; });
 
-    let typeDisplay = document.querySelectorAll('.profile-type-display');
+    let typeDisplay = document.querySelectorAll('.profile-type-display, .profile-type-home');
     typeDisplay.forEach(el => { if (data?.meta?.type) el.textContent = data.meta.type; });
 
-    if (data?.profile?.skins[0]?.base64) headplayer(data.profile.skins[0].base64);
+    if (data?.profile?.skins[0]?.base64) {
+        await headplayer(data.profile.skins[0].base64);
+    } else if (data?.name) {
+        await headplayer(`https://minotar.net/skin/${data.name}`);
+    }
 }
 
 async function headplayer(skinBase64) {
-    let skin = await new skin2D().creatHeadTexture(skinBase64);
-    let heads = document.querySelectorAll('.player-head, .profile-player-head');
-    heads.forEach(h => h.style.backgroundImage = `url(${skin})`);
+    try {
+        let skin = await new skin2D().creatHeadTexture(skinBase64);
+        let heads = document.querySelectorAll('.player-head, .profile-player-head');
+        heads.forEach(h => h.style.backgroundImage = `url(${skin})`);
+    } catch (err) {
+        console.error('Error generating head player texture:', err);
+    }
 }
 
 async function setStatus(opt) {

@@ -193,6 +193,7 @@ class Home {
         let instanceSelect = configClient ? configClient.instance_select : null
         let instancesList = await config.getInstanceList().catch(err => err)
         let auth = await this.db.readData('accounts', configClient ? configClient.account_selected : null)
+        if (auth) accountSelect(auth);
         let instanceBTN = document.querySelector('.play-instance')
 
         function updateInstanceUI(name) {
