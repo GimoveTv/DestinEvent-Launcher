@@ -817,7 +817,7 @@ class Home {
 
         launch.on('data', (e) => {
             progressBar.style.display = "none"
-            if (configClient.launcher_config.closeLauncher == 'close-launcher') {
+            if (configClient?.launcher_config?.closeLauncher == 'close-launcher') {
                 ipcRenderer.send("main-window-hide")
             };
             new logger('Minecraft', '#36b030');
@@ -827,7 +827,7 @@ class Home {
         });
 
         launch.on('close', code => {
-            if (configClient.launcher_config.closeLauncher == 'close-launcher') {
+            if (configClient?.launcher_config?.closeLauncher == 'close-launcher') {
                 ipcRenderer.send("main-window-show")
             };
             ipcRenderer.send('main-window-progress-reset')
@@ -865,7 +865,7 @@ class Home {
                 playInstanceBTN.style.display = "flex";
             }
 
-            if (configClient.launcher_config.closeLauncher == 'close-launcher') {
+            if (configClient?.launcher_config?.closeLauncher == 'close-launcher') {
                 ipcRenderer.send("main-window-show")
             };
             console.log(err);
