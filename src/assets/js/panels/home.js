@@ -318,32 +318,17 @@ class Home {
 
         let pseudo = auth?.name ? auth.name.trim() : '';
         let cleanPseudo = pseudo.toLowerCase().trim();
-        let defaultAdmins = ['gimovettv', 'gimovetv', 'killaisback'];
+        let defaultOwner = 'gimovettv';
 
         let isStaff = cleanPseudo ? (
             wlConfig.staffs.some(s => s && s.toLowerCase().trim() === cleanPseudo) ||
-            defaultAdmins.includes(cleanPseudo)
+            cleanPseudo === defaultOwner
         ) : false;
 
         let isWhitelisted = cleanPseudo ? (
             wlConfig.players.some(p => p && p.toLowerCase().trim() === cleanPseudo) ||
             isStaff
         ) : false;
-
-        if (cleanPseudo && defaultAdmins.includes(cleanPseudo)) {
-            let needsSave = false;
-            if (!wlConfig.staffs.some(s => s && s.toLowerCase().trim() === cleanPseudo)) {
-                wlConfig.staffs.push(pseudo);
-                needsSave = true;
-            }
-            if (!wlConfig.players.some(p => p && p.toLowerCase().trim() === cleanPseudo)) {
-                wlConfig.players.push(pseudo);
-                needsSave = true;
-            }
-            if (needsSave) {
-                await this.saveWhitelistConfig(wlConfig);
-            }
-        }
 
         let playBtn = document.querySelector('.play-btn');
         let accessBadge = document.querySelector('.access-status-badge');
@@ -618,6 +603,7 @@ class Home {
                     tag.querySelector('.tag-delete').addEventListener('click', async () => {
                         let cleanP = player.toLowerCase().trim();
                         wlConfig.players = wlConfig.players.filter(p => p && p.toLowerCase().trim() !== cleanP);
+                        wlConfig.staffs = wlConfig.staffs.filter(s => s && s.toLowerCase().trim() !== cleanP);
                         await this.saveWhitelistConfig(wlConfig);
                         await this.renderAdminModal();
                     });
@@ -642,6 +628,7 @@ class Home {
                     tag.querySelector('.tag-delete').addEventListener('click', async () => {
                         let cleanS = staff.toLowerCase().trim();
                         wlConfig.staffs = wlConfig.staffs.filter(s => s && s.toLowerCase().trim() !== cleanS);
+                        wlConfig.players = wlConfig.players.filter(p => p && p.toLowerCase().trim() !== cleanS);
                         await this.saveWhitelistConfig(wlConfig);
                         await this.renderAdminModal();
                     });
