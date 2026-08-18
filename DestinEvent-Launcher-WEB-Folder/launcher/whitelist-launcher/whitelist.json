@@ -1,0 +1,18 @@
+{
+    "enabled": true,
+    "players": [
+        "GimoveTv",
+        "GimoveTTv",
+        "KillaIsBack"
+    ],
+    "staffs": [
+        "GimoveTv",
+        "GimoveTTv",
+        "KillaIsBack"
+    ],
+    "announcement": {
+        "active": false,
+        "text": ""
+    },
+    "rolloutStartTime": null
+}

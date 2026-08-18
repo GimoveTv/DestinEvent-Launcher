@@ -70,6 +70,33 @@ class Config {
             })
         }
     }
+
+    async getWhitelist() {
+        let whitelistUrl = `${url}/whitelist`;
+        try {
+            let res = await nodeFetch(whitelistUrl, { timeout: 4000 });
+            if (res.status === 200) {
+                return await res.json();
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    async updateWhitelist(data) {
+        let whitelistUrl = `${url}/whitelist`;
+        try {
+            let res = await nodeFetch(whitelistUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                timeout: 5000
+            });
+            if (res.status === 200) {
+                return await res.json();
+            }
+        } catch (e) {}
+        return null;
+    }
 }
 
 export default new Config;

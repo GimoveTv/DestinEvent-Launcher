@@ -100,6 +100,16 @@ class Home {
                 console.error('Maintenance realtime check error:', e);
             }
         }, 5000);
+
+        // 3. Polling Temps Réel de la Whitelist Distante (toutes les 4s)
+        if (window.destinWlInterval) clearInterval(window.destinWlInterval);
+        window.destinWlInterval = setInterval(async () => {
+            try {
+                await this.checkWhitelistAndAccess();
+            } catch (e) {
+                console.error('Whitelist realtime check error:', e);
+            }
+        }, 4000);
     }
 
     initMedia() {
@@ -253,43 +263,55 @@ class Home {
     }
 
     async getWhitelistConfig() {
-        let wlConfig = await this.db.readData('whitelistConfig', 1).catch(() => null);
+        let remoteConfig = await config.getWhitelist().catch(() => null);
+        let wlConfig = null;
         let defaultStaffs = ['GimoveTTv', 'GimoveTv', 'KillaIsBack'];
+
+        if (remoteConfig && typeof remoteConfig === 'object') {
+            wlConfig = remoteConfig;
+        } else {
+            wlConfig = await this.db.readData('whitelistConfig', 1).catch(() => null);
+        }
 
         if (!wlConfig) {
             wlConfig = {
                 ID: 1,
                 enabled: true,
                 players: [...defaultStaffs],
-                staffs: [...defaultStaffs]
+                staffs: [...defaultStaffs],
+                announcement: { active: false, text: '' },
+                rolloutStartTime: null
             };
-            await this.db.updateData('whitelistConfig', wlConfig, 1);
-        } else {
-            let updated = false;
-            if (!Array.isArray(wlConfig.staffs)) wlConfig.staffs = [];
-            if (!Array.isArray(wlConfig.players)) wlConfig.players = [];
+        }
 
-            for (let name of defaultStaffs) {
-                if (!wlConfig.staffs.some(s => s.toLowerCase().trim() === name.toLowerCase().trim())) {
-                    wlConfig.staffs.push(name);
-                    updated = true;
-                }
-                if (!wlConfig.players.some(p => p.toLowerCase().trim() === name.toLowerCase().trim())) {
-                    wlConfig.players.push(name);
-                    updated = true;
-                }
+        if (!Array.isArray(wlConfig.staffs)) wlConfig.staffs = [];
+        if (!Array.isArray(wlConfig.players)) wlConfig.players = [];
+
+        let updated = false;
+        for (let name of defaultStaffs) {
+            if (!wlConfig.staffs.some(s => s && s.toLowerCase().trim() === name.toLowerCase().trim())) {
+                wlConfig.staffs.push(name);
+                updated = true;
             }
-
-            if (updated) {
-                await this.db.updateData('whitelistConfig', wlConfig, 1);
+            if (!wlConfig.players.some(p => p && p.toLowerCase().trim() === name.toLowerCase().trim())) {
+                wlConfig.players.push(name);
+                updated = true;
             }
         }
+
+        if (updated) {
+            await this.saveWhitelistConfig(wlConfig);
+        } else {
+            await this.db.updateData('whitelistConfig', wlConfig, 1);
+        }
+
         return wlConfig;
     }
 
     async saveWhitelistConfig(wlConfig) {
         wlConfig.ID = 1;
         await this.db.updateData('whitelistConfig', wlConfig, 1);
+        await config.updateWhitelist(wlConfig).catch(() => null);
         await this.checkWhitelistAndAccess();
     }
 
@@ -336,7 +358,7 @@ class Home {
                 needsSave = true;
             }
             if (needsSave) {
-                await this.db.updateData('whitelistConfig', wlConfig, 1);
+                await this.saveWhitelistConfig(wlConfig);
             }
         }
 
@@ -375,10 +397,37 @@ class Home {
             statusClass = 'access-pending';
             btnText = 'ACCÈS FERMÉ';
         } else if (isWhitelisted) {
-            isAuthorized = true;
-            statusLabel = 'Autorisé';
-            statusClass = 'access-authorized';
-            btnText = 'JOUER';
+            let playerIndex = wlConfig.players.findIndex(p => p && p.toLowerCase().trim() === cleanPseudo);
+
+            if (wlConfig.rolloutStartTime && playerIndex !== -1) {
+                let elapsedMs = Date.now() - wlConfig.rolloutStartTime;
+                let unlockedCount = Math.floor(elapsedMs / 2000) + 1;
+
+                if (playerIndex < unlockedCount) {
+                    isAuthorized = true;
+                    statusLabel = 'Autorisé';
+                    statusClass = 'access-authorized';
+                    btnText = 'JOUER';
+                } else {
+                    isAuthorized = false;
+                    let remainingSeconds = Math.ceil(((playerIndex - unlockedCount + 1) * 2000 - (elapsedMs % 2000)) / 1000);
+                    if (remainingSeconds < 1) remainingSeconds = 1;
+
+                    statusLabel = `Déblocage Rang #${playerIndex + 1}`;
+                    statusClass = 'access-pending';
+                    btnText = `OUVERTURE DANS ${remainingSeconds}s`;
+
+                    if (window.rolloutTimer) clearTimeout(window.rolloutTimer);
+                    window.rolloutTimer = setTimeout(() => {
+                        this.checkWhitelistAndAccess();
+                    }, 1000);
+                }
+            } else {
+                isAuthorized = true;
+                statusLabel = 'Autorisé';
+                statusClass = 'access-authorized';
+                btnText = 'JOUER';
+            }
         } else {
             isAuthorized = false;
             statusLabel = 'Non Whitelisté';
@@ -448,6 +497,11 @@ class Home {
             wlCheckbox.addEventListener('change', async (e) => {
                 let wlConfig = await this.getWhitelistConfig();
                 wlConfig.enabled = e.target.checked;
+                if (wlConfig.enabled) {
+                    wlConfig.rolloutStartTime = Date.now();
+                } else {
+                    wlConfig.rolloutStartTime = null;
+                }
                 await this.saveWhitelistConfig(wlConfig);
                 await this.renderAdminModal();
             });
