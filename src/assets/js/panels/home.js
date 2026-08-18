@@ -282,27 +282,10 @@ class Home {
                 announcement: { active: false, text: '' },
                 rolloutStartTime: null
             };
-        }
-
-        if (!Array.isArray(wlConfig.staffs)) wlConfig.staffs = [];
-        if (!Array.isArray(wlConfig.players)) wlConfig.players = [];
-
-        let updated = false;
-        for (let name of defaultStaffs) {
-            if (!wlConfig.staffs.some(s => s && s.toLowerCase().trim() === name.toLowerCase().trim())) {
-                wlConfig.staffs.push(name);
-                updated = true;
-            }
-            if (!wlConfig.players.some(p => p && p.toLowerCase().trim() === name.toLowerCase().trim())) {
-                wlConfig.players.push(name);
-                updated = true;
-            }
-        }
-
-        if (updated) {
             await this.saveWhitelistConfig(wlConfig);
         } else {
-            await this.db.updateData('whitelistConfig', wlConfig, 1);
+            if (!Array.isArray(wlConfig.staffs)) wlConfig.staffs = [];
+            if (!Array.isArray(wlConfig.players)) wlConfig.players = [];
         }
 
         return wlConfig;
@@ -633,7 +616,8 @@ class Home {
                         <span class="tag-delete" title="Supprimer">&times;</span>
                     `;
                     tag.querySelector('.tag-delete').addEventListener('click', async () => {
-                        wlConfig.players = wlConfig.players.filter(p => p !== player);
+                        let cleanP = player.toLowerCase().trim();
+                        wlConfig.players = wlConfig.players.filter(p => p && p.toLowerCase().trim() !== cleanP);
                         await this.saveWhitelistConfig(wlConfig);
                         await this.renderAdminModal();
                     });
@@ -656,7 +640,8 @@ class Home {
                         <span class="tag-delete" title="Supprimer">&times;</span>
                     `;
                     tag.querySelector('.tag-delete').addEventListener('click', async () => {
-                        wlConfig.staffs = wlConfig.staffs.filter(s => s !== staff);
+                        let cleanS = staff.toLowerCase().trim();
+                        wlConfig.staffs = wlConfig.staffs.filter(s => s && s.toLowerCase().trim() !== cleanS);
                         await this.saveWhitelistConfig(wlConfig);
                         await this.renderAdminModal();
                     });
