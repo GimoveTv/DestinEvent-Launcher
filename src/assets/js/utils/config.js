@@ -72,27 +72,37 @@ class Config {
     }
 
     async getWhitelist() {
-        let whitelistUrl = `${url}/whitelist`;
+        let whitelistPhpUrl = 'https://destinevent.alwaysdata.net/launcher/whitelist-launcher/whitelist.php';
+        let whitelistJsonUrl = 'https://destinevent.alwaysdata.net/launcher/whitelist-launcher/whitelist.json';
         try {
-            let res = await nodeFetch(whitelistUrl, { timeout: 4000 });
+            let res = await nodeFetch(whitelistPhpUrl, { timeout: 4000 });
             if (res.status === 200) {
                 return await res.json();
             }
         } catch (e) {}
+
+        try {
+            let resJson = await nodeFetch(whitelistJsonUrl, { timeout: 4000 });
+            if (resJson.status === 200) {
+                return await resJson.json();
+            }
+        } catch (e) {}
+
         return null;
     }
 
     async updateWhitelist(data) {
-        let whitelistUrl = `${url}/whitelist`;
+        let whitelistPhpUrl = 'https://destinevent.alwaysdata.net/launcher/whitelist-launcher/whitelist.php';
         try {
-            let res = await nodeFetch(whitelistUrl, {
+            let res = await nodeFetch(whitelistPhpUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
                 timeout: 5000
             });
             if (res.status === 200) {
-                return await res.json();
+                let json = await res.json();
+                return json?.data || json;
             }
         } catch (e) {}
         return null;
