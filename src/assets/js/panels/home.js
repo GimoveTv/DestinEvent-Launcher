@@ -514,7 +514,7 @@ class Home {
                 });
                 try {
                     localStorage.removeItem('bg_video_volume');
-                } catch (e) {}
+                } catch (e) { }
             });
         }
 
@@ -656,7 +656,33 @@ class Home {
         let launch = new Launch();
         let configClient = await this.db.readData('configClient');
         let instance = await config.getInstanceList().catch(err => null);
-        let authenticator = await this.db.readData('accounts', configClient ? configClient.account_selected : null);
+        
+        let authenticator = null;
+        if (configClient?.account_selected) {
+            authenticator = await this.db.readData('accounts', configClient.account_selected).catch(() => null);
+        }
+        if (!authenticator) {
+            let allAccounts = await this.db.readAllData('accounts').catch(() => []);
+            if (allAccounts && allAccounts.length > 0) {
+                authenticator = allAccounts[0];
+                if (configClient) {
+                    configClient.account_selected = authenticator.ID;
+                    await this.db.updateData('configClient', configClient);
+                }
+            }
+        }
+
+        if (!authenticator) {
+            let popupAuth = new popup();
+            popupAuth.openPopup({
+                title: 'Compte Non Connecté',
+                content: 'Aucun compte Minecraft n\'est sélectionné. Veuillez vous connecter avec votre compte Microsoft.',
+                color: 'red',
+                options: true
+            });
+            if (typeof changePanel === 'function') changePanel('login');
+            return;
+        }
 
         let options = (Array.isArray(instance) && instance.length > 0)
             ? (instance.find(i => i.name == configClient?.instance_select) || instance[0])
@@ -723,17 +749,6 @@ class Home {
             }
         }
 
-        launch.Launch(opt);
-
-        playInstanceBTN.style.display = "none"
-        infoStartingBOX.style.display = "block"
-        if (infoLaunchError) infoLaunchError.style.display = "none";
-        progressBar.style.display = "";
-        if (launchSpeed) launchSpeed.textContent = "0.0 Mo/s";
-        if (launchPct) launchPct.textContent = "0%";
-        if (launchEta) launchEta.textContent = "--:--";
-        ipcRenderer.send('main-window-progress-load')
-
         launch.on('extract', extract => {
             ipcRenderer.send('main-window-progress-load')
             infoStarting.innerHTML = "Extraction & installation..."
@@ -757,6 +772,31 @@ class Home {
             progressBar.value = progress;
             progressBar.max = size;
         });
+
+        try {
+            playInstanceBTN.style.display = "none";
+            infoStartingBOX.style.display = "block";
+            if (infoLaunchError) infoLaunchError.style.display = "none";
+            progressBar.style.display = "";
+            if (launchSpeed) launchSpeed.textContent = "0.0 Mo/s";
+            if (launchPct) launchPct.textContent = "0%";
+            if (launchEta) launchEta.textContent = "--:--";
+            ipcRenderer.send('main-window-progress-load');
+
+            launch.Launch(opt);
+        } catch (err) {
+            console.error('Launch sync error:', err);
+            ipcRenderer.send('main-window-progress-reset');
+            if (infoStartingBOX) infoStartingBOX.style.display = "none";
+            if (playInstanceBTN) playInstanceBTN.style.display = "flex";
+            let popupErr = new popup();
+            popupErr.openPopup({
+                title: 'Erreur de Lancement',
+                content: `Impossible de lancer le jeu : ${err?.message || err?.error || 'Problème d\'authentification. Veuillez vous re-connecter.'}`,
+                color: 'red',
+                options: true
+            });
+        }
 
         launch.on('estimated', (time) => {
             let minutes = Math.floor(time / 60);
