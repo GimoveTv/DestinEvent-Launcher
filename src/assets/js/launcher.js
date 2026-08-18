@@ -47,7 +47,26 @@ class Launcher {
             if (e.ctrlKey && e.keyCode == 87) {
                 ipcRenderer.send('main-window-close');
             }
-        })
+        });
+
+        document.addEventListener('click', e => {
+            let logoClick = e.target.closest('.clickable-logo, .sidebar-logo, .brand-badge, .top-bar-left');
+            if (logoClick) {
+                changePanel('home');
+            }
+
+            let adminClick = e.target.closest('.admin-btn, #nav-admin, #profile-nav-admin');
+            if (adminClick) {
+                changePanel('home');
+                let adminModal = document.querySelector('#admin-modal');
+                if (adminModal) {
+                    adminModal.style.display = 'flex';
+                    if (window.homeInstance && window.homeInstance.renderAdminModal) {
+                        window.homeInstance.renderAdminModal();
+                    }
+                }
+            }
+        });
     }
 
 

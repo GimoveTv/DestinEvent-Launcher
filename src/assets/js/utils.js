@@ -63,7 +63,7 @@ async function addAccount(data) {
     } else if (data?.name) {
         try {
             skin = await new skin2D().creatHeadTexture(`https://minotar.net/skin/${data.name}`);
-        } catch (e) {}
+        } catch (e) { }
     }
     let div = document.createElement("div");
     div.classList.add("account");
@@ -89,7 +89,7 @@ async function accountSelect(data) {
 
     if (activeAccount) activeAccount.classList.toggle('account-select');
     if (account) account.classList.add('account-select');
-    
+
     let pseudoHome = document.querySelector('.profile-pseudo-home');
     if (pseudoHome && data?.name) pseudoHome.textContent = data.name;
 
@@ -99,8 +99,23 @@ async function accountSelect(data) {
     let uuidDisplay = document.querySelectorAll('.profile-uuid-display');
     uuidDisplay.forEach(el => { if (data?.uuid || data?.ID) el.textContent = data.uuid || data.ID; });
 
+    let dbInstance = new database();
+    let wlConfig = await dbInstance.readData('whitelistConfig', 1).catch(() => null);
+    let defaultAdmins = ['gimovettv'];
+    let staffs = wlConfig?.staffs || defaultAdmins;
+    let nameLower = data?.name ? data.name.toLowerCase().trim() : '';
+    let isStaff = nameLower && (
+        staffs.some(s => s.toLowerCase().trim() === nameLower) ||
+        defaultAdmins.includes(nameLower)
+    );
+
     let typeDisplay = document.querySelectorAll('.profile-type-display, .profile-type-home');
-    typeDisplay.forEach(el => { if (data?.meta?.type) el.textContent = data.meta.type; });
+    typeDisplay.forEach(el => {
+        el.textContent = isStaff ? 'MEMBRE DU STAFF' : 'SURVIVANT DESTIN EVENT';
+    });
+
+    let adminBtn = document.querySelector('#nav-admin');
+    if (adminBtn) adminBtn.style.display = isStaff ? 'flex' : 'none';
 
     if (data?.profile?.skins[0]?.base64) {
         await headplayer(data.profile.skins[0].base64);

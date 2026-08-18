@@ -4,7 +4,7 @@
          SIDEBAR DE NAVIGATION VERTICALE (GAUCHE)
     ═══════════════════════════════════════════════════════ -->
     <nav class="sidebar-nav">
-        <div class="sidebar-logo">
+        <div class="sidebar-logo clickable-logo" title="Retour à l'Accueil">
             <img class="sidebar-icon-img" src="assets/images/icon/icon.png" alt="DE">
             <div class="sidebar-logo-glow"></div>
         </div>
@@ -19,6 +19,9 @@
         </ul>
 
         <div class="sidebar-bottom">
+            <div class="sidebar-item admin-btn" id="profile-nav-admin" title="Espace Admin / Staff" style="display: none;">
+                <span class="sidebar-nav-icon">&#128081;</span>
+            </div>
             <div class="sidebar-item profile-settings-btn" title="Paramètres">
                 <span class="sidebar-nav-icon icon-settings"></span>
             </div>
@@ -32,7 +35,7 @@
 
         <!-- ── TOP BAR (BANDEAU SUPÉRIEUR) ──────────────── -->
         <header class="top-bar">
-            <div class="top-bar-left">
+            <div class="top-bar-left clickable-logo" title="Retour à l'Accueil">
                 <div class="brand-badge">DE</div>
                 <div class="brand-titles">
                     <span class="top-bar-title">DESTIN EVENT</span>

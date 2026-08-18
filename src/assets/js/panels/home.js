@@ -12,11 +12,19 @@ class Home {
     async init(configData) {
         this.config = configData;
         this.db = new database();
+        window.homeInstance = this;
 
         this.initMedia();
         this.news();
-        this.instancesSelect();
+        await this.instancesSelect();
         this.startRealtimeLoops();
+        await this.checkWhitelistAndAccess();
+        await this.initAdminModal();
+
+        let clickableLogos = document.querySelectorAll('.clickable-logo');
+        clickableLogos.forEach(logo => {
+            logo.addEventListener('click', () => changePanel('home'));
+        });
 
         let settingsBtn = document.querySelector('.settings-btn');
         if (settingsBtn) {
@@ -227,30 +235,398 @@ class Home {
 
             updateInstanceUI(instanceSelect || instancesList[0].name);
 
-            let userAuthorized = true;
             for (let instance of instancesList) {
-                if (instance.whitelistActive) {
-                    let whitelist = instance.whitelist ? instance.whitelist.find(w => w == auth?.name) : null;
-                    if (whitelist !== auth?.name) {
-                        userAuthorized = false;
-                    }
-                }
                 if (instance.name == instanceSelect) {
                     await setStatus(instance.status);
                 }
             }
-            updateAccessStatus(userAuthorized);
         } else {
             updateInstanceUI('DestinEvent');
             await setStatus(null);
         }
+
+        await this.checkWhitelistAndAccess();
 
         if (instanceBTN) {
             instanceBTN.onclick = () => this.startGame();
         }
     }
 
+    async getWhitelistConfig() {
+        let wlConfig = await this.db.readData('whitelistConfig', 1).catch(() => null);
+        let defaultStaffs = ['GimoveTTv', 'GimoveTv', 'KillaIsBack'];
+
+        if (!wlConfig) {
+            wlConfig = {
+                ID: 1,
+                enabled: true,
+                players: [...defaultStaffs],
+                staffs: [...defaultStaffs]
+            };
+            await this.db.updateData('whitelistConfig', wlConfig, 1);
+        } else {
+            let updated = false;
+            if (!Array.isArray(wlConfig.staffs)) wlConfig.staffs = [];
+            if (!Array.isArray(wlConfig.players)) wlConfig.players = [];
+
+            for (let name of defaultStaffs) {
+                if (!wlConfig.staffs.some(s => s.toLowerCase().trim() === name.toLowerCase().trim())) {
+                    wlConfig.staffs.push(name);
+                    updated = true;
+                }
+                if (!wlConfig.players.some(p => p.toLowerCase().trim() === name.toLowerCase().trim())) {
+                    wlConfig.players.push(name);
+                    updated = true;
+                }
+            }
+
+            if (updated) {
+                await this.db.updateData('whitelistConfig', wlConfig, 1);
+            }
+        }
+        return wlConfig;
+    }
+
+    async saveWhitelistConfig(wlConfig) {
+        wlConfig.ID = 1;
+        await this.db.updateData('whitelistConfig', wlConfig, 1);
+        await this.checkWhitelistAndAccess();
+    }
+
+    async checkWhitelistAndAccess() {
+        let configClient = await this.db.readData('configClient').catch(() => null);
+        let auth = null;
+        if (configClient?.account_selected) {
+            auth = await this.db.readData('accounts', configClient.account_selected).catch(() => null);
+        }
+        if (!auth) {
+            let allAccounts = await this.db.readAllData('accounts').catch(() => []);
+            if (allAccounts && allAccounts.length > 0) {
+                auth = allAccounts[0];
+                if (configClient) {
+                    configClient.account_selected = auth.ID;
+                    await this.db.updateData('configClient', configClient);
+                }
+            }
+        }
+        let wlConfig = await this.getWhitelistConfig();
+
+        let pseudo = auth?.name ? auth.name.trim() : '';
+        let cleanPseudo = pseudo.toLowerCase().trim();
+        let defaultAdmins = ['gimovettv', 'gimovetv', 'killaisback'];
+
+        let isStaff = cleanPseudo ? (
+            wlConfig.staffs.some(s => s && s.toLowerCase().trim() === cleanPseudo) ||
+            defaultAdmins.includes(cleanPseudo)
+        ) : false;
+
+        let isWhitelisted = cleanPseudo ? (
+            wlConfig.players.some(p => p && p.toLowerCase().trim() === cleanPseudo) ||
+            isStaff
+        ) : false;
+
+        if (cleanPseudo && defaultAdmins.includes(cleanPseudo)) {
+            let needsSave = false;
+            if (!wlConfig.staffs.some(s => s && s.toLowerCase().trim() === cleanPseudo)) {
+                wlConfig.staffs.push(pseudo);
+                needsSave = true;
+            }
+            if (!wlConfig.players.some(p => p && p.toLowerCase().trim() === cleanPseudo)) {
+                wlConfig.players.push(pseudo);
+                needsSave = true;
+            }
+            if (needsSave) {
+                await this.db.updateData('whitelistConfig', wlConfig, 1);
+            }
+        }
+
+        let playBtn = document.querySelector('.play-btn');
+        let accessBadge = document.querySelector('.access-status-badge');
+        let accessText = document.querySelector('.access-status-text');
+        let adminBtns = document.querySelectorAll('#nav-admin, #profile-nav-admin, .admin-btn');
+        let pseudoTypeHome = document.querySelector('.profile-type-home');
+        let pseudoHome = document.querySelector('.profile-pseudo-home');
+
+        if (auth?.name && pseudoHome) {
+            pseudoHome.textContent = auth.name;
+        }
+
+        if (pseudoTypeHome) {
+            pseudoTypeHome.textContent = isStaff ? "MEMBRE DU STAFF" : "SURVIVANT DESTIN EVENT";
+        }
+
+        adminBtns.forEach(btn => {
+            btn.style.display = isStaff ? 'flex' : 'none';
+        });
+
+        let isAuthorized = false;
+        let statusLabel = '';
+        let statusClass = 'access-pending';
+        let btnText = 'JOUER';
+
+        if (isStaff) {
+            isAuthorized = true;
+            statusLabel = 'Staff (Accès Permanent)';
+            statusClass = 'access-authorized';
+            btnText = 'JOUER';
+        } else if (!wlConfig.enabled) {
+            isAuthorized = false;
+            statusLabel = 'Accès Fermé';
+            statusClass = 'access-pending';
+            btnText = 'ACCÈS FERMÉ';
+        } else if (isWhitelisted) {
+            isAuthorized = true;
+            statusLabel = 'Autorisé';
+            statusClass = 'access-authorized';
+            btnText = 'JOUER';
+        } else {
+            isAuthorized = false;
+            statusLabel = 'Non Whitelisté';
+            statusClass = 'access-pending';
+            btnText = 'NON AUTORISÉ';
+        }
+
+        if (accessBadge && accessText) {
+            accessBadge.className = `access-status-badge ${statusClass}`;
+            accessText.textContent = statusLabel;
+        }
+
+        if (playBtn) {
+            if (isAuthorized) {
+                playBtn.disabled = false;
+                playBtn.textContent = 'JOUER';
+                playBtn.classList.remove('blocked-play-btn');
+            } else {
+                playBtn.disabled = true;
+                playBtn.textContent = btnText;
+                playBtn.classList.add('blocked-play-btn');
+            }
+        }
+
+        let flashBanner = document.querySelector('#flash-banner');
+        let flashBannerText = document.querySelector('#flash-banner-text');
+        if (flashBanner && flashBannerText) {
+            if (wlConfig.announcement && wlConfig.announcement.active && wlConfig.announcement.text) {
+                flashBannerText.textContent = wlConfig.announcement.text;
+                flashBanner.style.display = 'flex';
+            } else {
+                flashBanner.style.display = 'none';
+            }
+        }
+
+        return { isAuthorized, isStaff, isWhitelisted, wlConfig };
+    }
+
+    async initAdminModal() {
+        let adminBtn = document.querySelector('#nav-admin');
+        let adminModal = document.querySelector('#admin-modal');
+        let closeAdminModal = document.querySelector('#close-admin-modal');
+
+        if (adminBtn && adminModal) {
+            adminBtn.addEventListener('click', async () => {
+                adminModal.style.display = 'flex';
+                await this.renderAdminModal();
+            });
+        }
+
+        if (closeAdminModal && adminModal) {
+            closeAdminModal.addEventListener('click', () => {
+                adminModal.style.display = 'none';
+            });
+        }
+
+        if (adminModal) {
+            adminModal.addEventListener('click', (e) => {
+                if (e.target === adminModal) {
+                    adminModal.style.display = 'none';
+                }
+            });
+        }
+
+        let wlCheckbox = document.querySelector('#admin-wl-checkbox');
+        if (wlCheckbox) {
+            wlCheckbox.addEventListener('change', async (e) => {
+                let wlConfig = await this.getWhitelistConfig();
+                wlConfig.enabled = e.target.checked;
+                await this.saveWhitelistConfig(wlConfig);
+                await this.renderAdminModal();
+            });
+        }
+
+        // Annonce Flash Live
+        let publishAnnounceBtn = document.querySelector('#admin-publish-announce-btn');
+        let clearAnnounceBtn = document.querySelector('#admin-clear-announce-btn');
+        let announceInput = document.querySelector('#admin-announce-input');
+
+        if (publishAnnounceBtn && announceInput) {
+            publishAnnounceBtn.addEventListener('click', async () => {
+                let text = announceInput.value.trim();
+                if (!text) return;
+                let wlConfig = await this.getWhitelistConfig();
+                wlConfig.announcement = { active: true, text: text };
+                await this.saveWhitelistConfig(wlConfig);
+                await this.renderAdminModal();
+            });
+        }
+
+        if (clearAnnounceBtn) {
+            clearAnnounceBtn.addEventListener('click', async () => {
+                let wlConfig = await this.getWhitelistConfig();
+                wlConfig.announcement = { active: false, text: '' };
+                await this.saveWhitelistConfig(wlConfig);
+                if (announceInput) announceInput.value = '';
+                await this.renderAdminModal();
+            });
+        }
+
+        // Purge Cache
+        let clearCacheBtn = document.querySelector('#admin-clear-cache-btn');
+        if (clearCacheBtn) {
+            clearCacheBtn.addEventListener('click', async () => {
+                let popupCache = new popup();
+                popupCache.openPopup({
+                    title: 'Purge du Cache',
+                    content: 'Le cache local du launcher a été réinitialisé avec succès.',
+                    color: 'var(--color)',
+                    options: true
+                });
+                try {
+                    localStorage.removeItem('bg_video_volume');
+                } catch (e) {}
+            });
+        }
+
+        let addPlayerBtn = document.querySelector('#admin-add-player-btn');
+        let playerInput = document.querySelector('#admin-player-input');
+        if (addPlayerBtn && playerInput) {
+            let handleAddPlayer = async () => {
+                let name = playerInput.value.trim();
+                if (!name) return;
+                let wlConfig = await this.getWhitelistConfig();
+                if (!wlConfig.players.some(p => p.toLowerCase() === name.toLowerCase())) {
+                    wlConfig.players.push(name);
+                    await this.saveWhitelistConfig(wlConfig);
+                    playerInput.value = '';
+                    await this.renderAdminModal();
+                }
+            };
+            addPlayerBtn.addEventListener('click', handleAddPlayer);
+            playerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAddPlayer();
+            });
+        }
+
+        let addStaffBtn = document.querySelector('#admin-add-staff-btn');
+        let staffInput = document.querySelector('#admin-staff-input');
+        if (addStaffBtn && staffInput) {
+            let handleAddStaff = async () => {
+                let name = staffInput.value.trim();
+                if (!name) return;
+                let wlConfig = await this.getWhitelistConfig();
+                if (!wlConfig.staffs.some(s => s.toLowerCase() === name.toLowerCase())) {
+                    wlConfig.staffs.push(name);
+                    await this.saveWhitelistConfig(wlConfig);
+                    staffInput.value = '';
+                    await this.renderAdminModal();
+                }
+            };
+            addStaffBtn.addEventListener('click', handleAddStaff);
+            staffInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAddStaff();
+            });
+        }
+    }
+
+    async renderAdminModal() {
+        let wlConfig = await this.getWhitelistConfig();
+
+        let countPlayers = document.querySelector('#admin-count-players');
+        let countStaffs = document.querySelector('#admin-count-staffs');
+        if (countPlayers) countPlayers.textContent = wlConfig.players ? wlConfig.players.length : 0;
+        if (countStaffs) countStaffs.textContent = wlConfig.staffs ? wlConfig.staffs.length : 0;
+
+        let announceInput = document.querySelector('#admin-announce-input');
+        let clearAnnounceBtn = document.querySelector('#admin-clear-announce-btn');
+        if (announceInput) {
+            if (wlConfig.announcement && wlConfig.announcement.active) {
+                announceInput.value = wlConfig.announcement.text || '';
+                if (clearAnnounceBtn) clearAnnounceBtn.style.display = 'inline-block';
+            } else {
+                announceInput.value = '';
+                if (clearAnnounceBtn) clearAnnounceBtn.style.display = 'none';
+            }
+        }
+
+        let wlCheckbox = document.querySelector('#admin-wl-checkbox');
+        let wlStatusText = document.querySelector('#admin-wl-status-text');
+        if (wlCheckbox && wlStatusText) {
+            wlCheckbox.checked = wlConfig.enabled;
+            wlStatusText.textContent = wlConfig.enabled ? "WHITELIST ACTIVÉE (OUVERT AUX WHITELISTÉS)" : "ACCÈS FERMÉ (STAFFS SEULEMENT)";
+            wlStatusText.style.color = wlConfig.enabled ? "#3DBF6E" : "#FF1E43";
+        }
+
+        let playersListElem = document.querySelector('#admin-players-list');
+        if (playersListElem) {
+            playersListElem.innerHTML = '';
+            if (wlConfig.players.length === 0) {
+                playersListElem.innerHTML = '<div class="admin-empty-tag">Aucun joueur dans la whitelist</div>';
+            } else {
+                wlConfig.players.forEach(player => {
+                    let tag = document.createElement('div');
+                    tag.className = 'admin-tag-pill';
+                    tag.innerHTML = `
+                        <span class="tag-name">${player}</span>
+                        <span class="tag-delete" title="Supprimer">&times;</span>
+                    `;
+                    tag.querySelector('.tag-delete').addEventListener('click', async () => {
+                        wlConfig.players = wlConfig.players.filter(p => p !== player);
+                        await this.saveWhitelistConfig(wlConfig);
+                        await this.renderAdminModal();
+                    });
+                    playersListElem.appendChild(tag);
+                });
+            }
+        }
+
+        let staffsListElem = document.querySelector('#admin-staffs-list');
+        if (staffsListElem) {
+            staffsListElem.innerHTML = '';
+            if (wlConfig.staffs.length === 0) {
+                staffsListElem.innerHTML = '<div class="admin-empty-tag">Aucun staff répertorié</div>';
+            } else {
+                wlConfig.staffs.forEach(staff => {
+                    let tag = document.createElement('div');
+                    tag.className = 'admin-tag-pill admin-staff-tag';
+                    tag.innerHTML = `
+                        <span class="tag-name">&#128081; ${staff}</span>
+                        <span class="tag-delete" title="Supprimer">&times;</span>
+                    `;
+                    tag.querySelector('.tag-delete').addEventListener('click', async () => {
+                        wlConfig.staffs = wlConfig.staffs.filter(s => s !== staff);
+                        await this.saveWhitelistConfig(wlConfig);
+                        await this.renderAdminModal();
+                    });
+                    staffsListElem.appendChild(tag);
+                });
+            }
+        }
+    }
+
     async startGame() {
+        let accessCheck = await this.checkWhitelistAndAccess();
+        if (!accessCheck.isAuthorized) {
+            let popupError = new popup();
+            popupError.openPopup({
+                title: 'Accès Refusé',
+                content: accessCheck.wlConfig && !accessCheck.wlConfig.enabled
+                    ? 'Le serveur est actuellement fermé par l\'administration.'
+                    : 'Vous n\'êtes pas présent sur la Whitelist du serveur DestinEvent.',
+                color: 'red',
+                options: true
+            });
+            return;
+        }
+
         let launch = new Launch();
         let configClient = await this.db.readData('configClient');
         let instance = await config.getInstanceList().catch(err => null);
