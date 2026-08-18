@@ -16,9 +16,6 @@
             <li class="sidebar-item" id="nav-profile" title="Espace Joueur">
                 <span class="sidebar-nav-icon">&#128100;</span>
             </li>
-            <li class="sidebar-item" id="nav-news" title="Acte">
-                <span class="sidebar-nav-icon">&#9719;</span>
-            </li>
         </ul>
 
         <div class="sidebar-bottom">
@@ -27,6 +24,9 @@
             </div>
             <div class="sidebar-item settings-btn" title="Paramètres">
                 <span class="sidebar-nav-icon icon-settings"></span>
+            </div>
+            <div class="sidebar-item sidebar-user-item" id="nav-logout" title="Déconnexion du compte">
+                <div class="sidebar-player-head" title="Déconnexion du compte"></div>
             </div>
         </div>
     </nav>
@@ -144,7 +144,7 @@
         <!-- ── ZONE BASSE : ACTE (NEWS COMPACT) + ESPACE JOUEUR ── -->
         <div class="bottom-zone">
 
-            <!-- Flux d'informations (Acte - 2 derniers affichés avec scroll) -->
+            <!-- Flux d'informations (Acte - À GAUCHE) -->
             <div class="news-zone">
                 <div class="news-zone-header">
                     <span class="news-zone-title">ACTE</span>
@@ -153,7 +153,7 @@
                 <div class="news-list content-scroll"></div>
             </div>
 
-            <!-- ESPACE JOUEUR DÉDIÉ -->
+            <!-- ESPACE JOUEUR DÉDIÉ (EN BAS À DROITE) -->
             <div class="espace-joueur-card" id="espace-joueur">
 
                 <div class="espace-joueur-header">
@@ -221,83 +221,28 @@
 
     </div><!-- /main-content -->
 
+
+
     <!-- ══════════════════════════════════════════════════════
-         MODAL / OVERLAY ESPACE ADMIN & GESTION WHITELIST
+         MODAL / OVERLAY DÉCONNEXION COMPTE
     ═══════════════════════════════════════════════════════ -->
-    <div class="admin-modal-overlay" id="admin-modal" style="display: none;">
-        <div class="admin-modal-card">
+    <div class="admin-modal-overlay" id="logout-modal" style="display: none;">
+        <div class="admin-modal-card logout-modal-card">
             <div class="admin-modal-header">
                 <div class="admin-modal-title-block">
-                    <span class="admin-modal-badge">&#128081; ACCÈS STAFF</span>
-                    <h2 class="admin-modal-title">GESTION WHITELIST & STAFFS</h2>
+                    <span class="admin-modal-badge">&#128100; COMPTE MINECRAFT</span>
+                    <h2 class="admin-modal-title">DÉCONNEXION DU COMPTE</h2>
                 </div>
-                <button class="admin-modal-close-btn" id="close-admin-modal" title="Fermer">&times;</button>
+                <button class="admin-modal-close-btn" id="close-logout-modal" title="Fermer">&times;</button>
             </div>
-
-            <div class="admin-modal-body">
-                <!-- Section 1 : Switch Whitelist ON/OFF & Stats -->
-                <div class="admin-section admin-section-toggle">
-                    <div class="admin-toggle-info">
-                        <span class="admin-section-label">STATUT DU SERVEUR / WHITELIST</span>
-                        <div class="admin-toggle-status-text" id="admin-wl-status-text">WHITELIST ACTIVÉE</div>
-                    </div>
-                    <div class="admin-header-tools">
-                        <div class="admin-stat-chip" title="Joueurs Whitelistés">
-                            <span class="stat-icon">&#128104;</span>
-                            <span class="stat-val" id="admin-count-players">0</span>
-                        </div>
-                        <div class="admin-stat-chip admin-stat-staff" title="Membres du Staff">
-                            <span class="stat-icon">&#128081;</span>
-                            <span class="stat-val" id="admin-count-staffs">0</span>
-                        </div>
-                        <label class="switch-neon-wrapper">
-                            <input type="checkbox" id="admin-wl-checkbox" checked>
-                            <span class="switch-neon-slider"></span>
-                        </label>
-                    </div>
+            <div class="logout-modal-body">
+                <div class="logout-head-preview">
+                    <div class="sidebar-player-head"></div>
                 </div>
-
-                <!-- Section 2 : Annonce Flash Live Staff -->
-                <div class="admin-section admin-section-announce">
-                    <span class="admin-section-label">📢 MESSAGE D'ANNONCE FLASH (EN DIRECT)</span>
-                    <div class="admin-input-group">
-                        <input type="text" id="admin-announce-input" class="admin-input" placeholder="Message d'urgence ou d'événement (ex: Événement ce soir à 21h00 !)...">
-                        <button id="admin-publish-announce-btn" class="admin-action-btn">+ PUBLIER</button>
-                        <button id="admin-clear-announce-btn" class="admin-action-btn cancel-btn" style="display: none;">EFFACER</button>
-                    </div>
-                </div>
-
-                <div class="admin-grid-columns">
-                    <!-- Section 3 : Whitelist Joueurs -->
-                    <div class="admin-section admin-section-players">
-                        <span class="admin-section-label">JOUEURS AUTORISÉS (WHITELIST)</span>
-                        <div class="admin-input-group">
-                            <input type="text" id="admin-player-input" class="admin-input" placeholder="Pseudo Minecraft...">
-                            <button id="admin-add-player-btn" class="admin-action-btn">+ AJOUTER</button>
-                        </div>
-                        <div class="admin-tags-container content-scroll" id="admin-players-list">
-                            <!-- Dynamique -->
-                        </div>
-                    </div>
-
-                    <!-- Section 4 : Membres du Staff -->
-                    <div class="admin-section admin-section-staffs">
-                        <span class="admin-section-label">MEMBRES DU STAFF (ACCÈS PERMANENT)</span>
-                        <div class="admin-input-group">
-                            <input type="text" id="admin-staff-input" class="admin-input" placeholder="Pseudo Staff...">
-                            <button id="admin-add-staff-btn" class="admin-action-btn admin-btn-staff">+ AJOUTER STAFF</button>
-                        </div>
-                        <div class="admin-tags-container content-scroll" id="admin-staffs-list">
-                            <!-- Dynamique -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer Tools : Purge Cache -->
-                <div class="admin-footer-tools">
-                    <button id="admin-clear-cache-btn" class="admin-action-btn admin-btn-purge" title="Vider les données temporaires du launcher">
-                        🧹 PURGER LE CACHE DU LAUNCHER
-                    </button>
+                <p class="logout-modal-text">Voulez-vous vraiment vous déconnecter de votre compte Minecraft ?</p>
+                <div class="logout-modal-actions">
+                    <button id="confirm-logout-btn" class="admin-action-btn admin-btn-purge">OUI, SE DÉCONNECTER</button>
+                    <button id="cancel-logout-btn" class="admin-action-btn cancel-btn">ANNULER</button>
                 </div>
             </div>
         </div>

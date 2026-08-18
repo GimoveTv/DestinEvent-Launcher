@@ -296,33 +296,35 @@ class Settings {
         maxDownloadFilesInput.value = maxDownloadFiles;
 
         maxDownloadFilesInput.addEventListener("change", async () => {
-            let configClient = await this.db.readData('configClient')
+            let configClient = (await this.db.readData('configClient')) || {};
+            if (!configClient.launcher_config) configClient.launcher_config = {};
             configClient.launcher_config.download_multi = maxDownloadFilesInput.value;
             await this.db.updateData('configClient', configClient);
-        })
+        });
 
         maxDownloadFilesReset.addEventListener("click", async () => {
-            let configClient = await this.db.readData('configClient')
-            maxDownloadFilesInput.value = 5
+            let configClient = (await this.db.readData('configClient')) || {};
+            if (!configClient.launcher_config) configClient.launcher_config = {};
+            maxDownloadFilesInput.value = 5;
             configClient.launcher_config.download_multi = 5;
             await this.db.updateData('configClient', configClient);
-        })
+        });
 
         let themeBox = document.querySelector(".theme-box");
         let theme = configClient?.launcher_config?.theme || "auto";
 
         if (theme == "auto") {
-            document.querySelector('.theme-btn-auto').classList.add('active-theme');
+            document.querySelector('.theme-btn-auto')?.classList.add('active-theme');
         } else if (theme == "dark") {
-            document.querySelector('.theme-btn-sombre').classList.add('active-theme');
+            document.querySelector('.theme-btn-sombre')?.classList.add('active-theme');
         } else if (theme == "light") {
-            document.querySelector('.theme-btn-clair').classList.add('active-theme');
+            document.querySelector('.theme-btn-clair')?.classList.add('active-theme');
         }
 
         themeBox.addEventListener("click", async e => {
             if (e.target.classList.contains('theme-btn')) {
                 let activeTheme = document.querySelector('.active-theme');
-                if (e.target.classList.contains('active-theme')) return
+                if (e.target.classList.contains('active-theme')) return;
                 activeTheme?.classList.remove('active-theme');
 
                 if (e.target.classList.contains('theme-btn-auto')) {
@@ -339,38 +341,35 @@ class Settings {
                     e.target.classList.add('active-theme');
                 }
 
-                let configClient = await this.db.readData('configClient')
+                let configClient = (await this.db.readData('configClient')) || {};
+                if (!configClient.launcher_config) configClient.launcher_config = {};
                 configClient.launcher_config.theme = theme;
                 await this.db.updateData('configClient', configClient);
             }
-        })
+        });
 
         let closeBox = document.querySelector(".close-box");
         let closeLauncher = configClient?.launcher_config?.closeLauncher || "close-launcher";
+        if (closeLauncher === "close-all") closeLauncher = "close-launcher";
 
         if (closeLauncher == "close-launcher") {
-            document.querySelector('.close-launcher').classList.add('active-close');
-        } else if (closeLauncher == "close-all") {
-            document.querySelector('.close-all').classList.add('active-close');
+            document.querySelector('.close-launcher')?.classList.add('active-close');
         } else if (closeLauncher == "close-none") {
-            document.querySelector('.close-none').classList.add('active-close');
+            document.querySelector('.close-none')?.classList.add('active-close');
         }
 
         closeBox.addEventListener("click", async e => {
             if (e.target.classList.contains('close-btn')) {
                 let activeClose = document.querySelector('.active-close');
-                if (e.target.classList.contains('active-close')) return
+                if (e.target.classList.contains('active-close')) return;
                 activeClose?.classList.toggle('active-close');
 
-                let configClient = await this.db.readData('configClient')
+                let configClient = (await this.db.readData('configClient')) || {};
+                if (!configClient.launcher_config) configClient.launcher_config = {};
 
                 if (e.target.classList.contains('close-launcher')) {
                     e.target.classList.toggle('active-close');
                     configClient.launcher_config.closeLauncher = "close-launcher";
-                    await this.db.updateData('configClient', configClient);
-                } else if (e.target.classList.contains('close-all')) {
-                    e.target.classList.toggle('active-close');
-                    configClient.launcher_config.closeLauncher = "close-all";
                     await this.db.updateData('configClient', configClient);
                 } else if (e.target.classList.contains('close-none')) {
                     e.target.classList.toggle('active-close');
@@ -378,7 +377,7 @@ class Settings {
                     await this.db.updateData('configClient', configClient);
                 }
             }
-        })
+        });
     }
 }
 export default Settings;

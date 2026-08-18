@@ -7,6 +7,7 @@ import Login from './panels/login.js';
 import Home from './panels/home.js';
 import Profile from './panels/profile.js';
 import Settings from './panels/settings.js';
+import Admin from './panels/admin.js';
 
 // import modules
 import { logger, config, changePanel, database, popup, setBackground, accountSelect, addAccount, pkg } from './utils.js';
@@ -28,7 +29,7 @@ class Launcher {
         if (await this.config.error) return this.errorConnect()
         this.db = new database();
         await this.initConfigClient();
-        this.createPanels(Login, Home, Profile, Settings);
+        this.createPanels(Login, Home, Profile, Settings, Admin);
         this.startLauncher();
     }
 
@@ -55,16 +56,47 @@ class Launcher {
                 changePanel('home');
             }
 
-            let adminClick = e.target.closest('.admin-btn, #nav-admin, #profile-nav-admin');
+            let adminClick = e.target.closest('.admin-btn, #nav-admin, #profile-nav-admin, #admin-nav-admin');
             if (adminClick) {
-                changePanel('home');
-                let adminModal = document.querySelector('#admin-modal');
-                if (adminModal) {
-                    adminModal.style.display = 'flex';
-                    if (window.homeInstance && window.homeInstance.renderAdminModal) {
-                        window.homeInstance.renderAdminModal();
-                    }
+                changePanel('admin');
+            }
+
+            let logoutClick = e.target.closest('#nav-logout, .sidebar-user-item, .sidebar-player-head');
+            if (logoutClick && !e.target.closest('#logout-modal')) {
+                let logoutModal = document.querySelector('#logout-modal');
+                if (logoutModal) {
+                    logoutModal.style.display = 'flex';
                 }
+            }
+
+            let closeLogout = e.target.closest('#close-logout-modal, #cancel-logout-btn');
+            if (closeLogout) {
+                let logoutModal = document.querySelector('#logout-modal');
+                if (logoutModal) logoutModal.style.display = 'none';
+            }
+
+            let confirmLogout = e.target.closest('#confirm-logout-btn');
+            if (confirmLogout) {
+                let logoutModal = document.querySelector('#logout-modal');
+                if (logoutModal) logoutModal.style.display = 'none';
+                (async () => {
+                    let db = new database();
+                    let accounts = await db.readAllData('accounts').catch(() => []);
+                    for (let acc of accounts) {
+                        if (acc?.ID) await db.deleteData('accounts', acc.ID).catch(() => {});
+                    }
+                    let configClient = await db.readData('configClient').catch(() => null);
+                    if (configClient) {
+                        configClient.account_selected = null;
+                        await db.updateData('configClient', configClient).catch(() => {});
+                    }
+                    changePanel('login');
+                })();
+            }
+
+            let logoutModal = document.querySelector('#logout-modal');
+            if (logoutModal && e.target === logoutModal) {
+                logoutModal.style.display = 'none';
             }
         });
     }
@@ -99,6 +131,14 @@ class Launcher {
             maximize.classList.toggle('icon-maximize')
             maximize.classList.toggle('icon-restore-down')
         });
+
+        let dragbar = document.querySelector('.dragbar');
+        if (dragbar) {
+            dragbar.addEventListener('dblclick', (e) => {
+                if (e.target.closest('#minimize, #maximize, #close')) return;
+                ipcRenderer.send('main-window-maximize');
+            });
+        }
 
         document.querySelector(`.${platform} .frame #close`).addEventListener('click', () => {
             ipcRenderer.send('main-window-close');

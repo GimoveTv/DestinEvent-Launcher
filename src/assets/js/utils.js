@@ -50,6 +50,9 @@ async function changePanel(id) {
     if (id === 'settings' && window.settingsInstance) {
         window.settingsInstance.loadAccounts();
     }
+    if (id === 'admin' && window.adminInstance) {
+        window.adminInstance.render();
+    }
 }
 
 async function appdata() {
@@ -117,22 +120,40 @@ async function accountSelect(data) {
     let adminBtn = document.querySelector('#nav-admin');
     if (adminBtn) adminBtn.style.display = isStaff ? 'flex' : 'none';
 
+    if (data?.name) {
+        let avatarUrl = `https://minotar.net/avatar/${data.name}/64`;
+        let heads = document.querySelectorAll('.player-head, .profile-player-head, .sidebar-player-head, .admin-player-head');
+        heads.forEach(h => {
+            h.style.backgroundImage = `url(${avatarUrl})`;
+            h.style.backgroundSize = 'cover';
+            h.style.backgroundRepeat = 'no-repeat';
+        });
+    }
+
     if (data?.profile?.skins[0]?.base64) {
-        await headplayer(data.profile.skins[0].base64);
+        await headplayer(data.profile.skins[0].base64, data?.name);
     } else if (data?.name) {
-        await headplayer(`https://minotar.net/skin/${data.name}`);
+        await headplayer(`https://minotar.net/skin/${data.name}`, data?.name);
     }
 }
 
-async function headplayer(skinBase64) {
+async function headplayer(skinBase64, username) {
     try {
         let skin = await new skin2D().creatHeadTexture(skinBase64);
-        let heads = document.querySelectorAll('.player-head, .profile-player-head');
-        heads.forEach(h => h.style.backgroundImage = `url(${skin})`);
+        let heads = document.querySelectorAll('.player-head, .profile-player-head, .sidebar-player-head, .admin-player-head');
+        heads.forEach(h => {
+            h.style.backgroundImage = `url(${skin})`;
+            h.style.backgroundSize = 'cover';
+            h.style.backgroundRepeat = 'no-repeat';
+        });
     } catch (err) {
-        console.error('Error generating head player texture:', err);
-        let heads = document.querySelectorAll('.player-head, .profile-player-head');
-        heads.forEach(h => h.style.backgroundImage = `url(assets/images/default/setve.png)`);
+        let avatarUrl = username ? `https://minotar.net/avatar/${username}/64` : 'assets/images/default/setve.png';
+        let heads = document.querySelectorAll('.player-head, .profile-player-head, .sidebar-player-head, .admin-player-head');
+        heads.forEach(h => {
+            h.style.backgroundImage = `url(${avatarUrl})`;
+            h.style.backgroundSize = 'cover';
+            h.style.backgroundRepeat = 'no-repeat';
+        });
     }
 }
 

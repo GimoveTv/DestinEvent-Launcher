@@ -403,9 +403,23 @@ class Home {
             btnText = 'NON AUTORISÉ';
         }
 
+        let previousStatus = this.lastStatusLabel;
+        let previousAuth = this.lastIsAuthorized;
+        let previousAnnounce = this.lastAnnouncementText;
+
+        this.lastStatusLabel = statusLabel;
+        this.lastIsAuthorized = isAuthorized;
+        this.lastAnnouncementText = (wlConfig.announcement && wlConfig.announcement.active) ? wlConfig.announcement.text : '';
+
         if (accessBadge && accessText) {
             accessBadge.className = `access-status-badge ${statusClass}`;
             accessText.textContent = statusLabel;
+
+            if (previousStatus && previousStatus !== statusLabel) {
+                accessBadge.classList.remove('live-pulse-success', 'live-pulse-pending');
+                void accessBadge.offsetWidth;
+                accessBadge.classList.add(isAuthorized ? 'live-pulse-success' : 'live-pulse-pending');
+            }
         }
 
         if (playBtn) {
@@ -413,6 +427,12 @@ class Home {
                 playBtn.disabled = false;
                 playBtn.textContent = 'JOUER';
                 playBtn.classList.remove('blocked-play-btn');
+
+                if (previousAuth === false) {
+                    playBtn.classList.remove('just-unlocked');
+                    void playBtn.offsetWidth;
+                    playBtn.classList.add('just-unlocked');
+                }
             } else {
                 playBtn.disabled = true;
                 playBtn.textContent = btnText;
@@ -424,8 +444,16 @@ class Home {
         let flashBannerText = document.querySelector('#flash-banner-text');
         if (flashBanner && flashBannerText) {
             if (wlConfig.announcement && wlConfig.announcement.active && wlConfig.announcement.text) {
+                let textChanged = previousAnnounce !== wlConfig.announcement.text;
                 flashBannerText.textContent = wlConfig.announcement.text;
-                flashBanner.style.display = 'flex';
+                if (flashBanner.style.display !== 'flex') {
+                    flashBanner.style.display = 'flex';
+                }
+                if (textChanged) {
+                    flashBannerText.classList.remove('text-updated');
+                    void flashBannerText.offsetWidth;
+                    flashBannerText.classList.add('text-updated');
+                }
             } else {
                 flashBanner.style.display = 'none';
             }
@@ -583,7 +611,7 @@ class Home {
         let wlStatusText = document.querySelector('#admin-wl-status-text');
         if (wlCheckbox && wlStatusText) {
             wlCheckbox.checked = wlConfig.enabled;
-            wlStatusText.textContent = wlConfig.enabled ? "WHITELIST ACTIVÉE (OUVERT AUX WHITELISTÉS)" : "ACCÈS FERMÉ (STAFFS SEULEMENT)";
+            wlStatusText.textContent = wlConfig.enabled ? "WHITELIST ACTIVÉE (OUVERT AUX JOUEURS)" : "ACCÈS FERMÉ (STAFFS SEULEMENT)";
             wlStatusText.style.color = wlConfig.enabled ? "#3DBF6E" : "#FF1E43";
         }
 
@@ -597,6 +625,7 @@ class Home {
                     let tag = document.createElement('div');
                     tag.className = 'admin-tag-pill';
                     tag.innerHTML = `
+                        <img class="tag-head-img" src="https://minotar.net/avatar/${player}/24" onerror="this.src='assets/images/default/setve.png'" alt="${player}">
                         <span class="tag-name">${player}</span>
                         <span class="tag-delete" title="Supprimer">&times;</span>
                     `;
@@ -622,6 +651,7 @@ class Home {
                     let tag = document.createElement('div');
                     tag.className = 'admin-tag-pill admin-staff-tag';
                     tag.innerHTML = `
+                        <img class="tag-head-img" src="https://minotar.net/avatar/${staff}/24" onerror="this.src='assets/images/default/setve.png'" alt="${staff}">
                         <span class="tag-name">&#128081; ${staff}</span>
                         <span class="tag-delete" title="Supprimer">&times;</span>
                     `;
@@ -656,7 +686,7 @@ class Home {
         let launch = new Launch();
         let configClient = await this.db.readData('configClient');
         let instance = await config.getInstanceList().catch(err => null);
-        
+
         let authenticator = null;
         if (configClient?.account_selected) {
             authenticator = await this.db.readData('accounts', configClient.account_selected).catch(() => null);
@@ -717,7 +747,7 @@ class Home {
             path: `${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`,
             instance: options.name,
             version: options.loader ? options.loader.minecraft_version : '1.21.1',
-            detached: configClient?.launcher_config?.closeLauncher == "close-all" ? false : true,
+            detached: false,
             downloadFileMultiple: configClient?.launcher_config?.download_multi !== undefined ? configClient.launcher_config.download_multi : true,
             intelEnabledMac: configClient?.launcher_config?.intelEnabledMac || false,
 
@@ -735,7 +765,11 @@ class Home {
                 path: configClient?.java_config?.java_path || null,
             },
 
-            JVM_ARGS: options.jvm_args ? options.jvm_args : [],
+            JVM_ARGS: [
+                '-Dneoforge.earlywindow=false',
+                '-Dfml.earlywindow=false',
+                ...(options.jvm_args ? options.jvm_args : [])
+            ],
             GAME_ARGS: options.game_args ? options.game_args : [],
 
             screen: {
@@ -817,12 +851,15 @@ class Home {
 
         launch.on('data', (e) => {
             progressBar.style.display = "none"
+            if (launchSpeed) launchSpeed.textContent = "";
+            if (launchEta) launchEta.textContent = "";
+            if (launchPct) launchPct.textContent = "";
             if (configClient?.launcher_config?.closeLauncher == 'close-launcher') {
                 ipcRenderer.send("main-window-hide")
             };
             new logger('Minecraft', '#36b030');
             ipcRenderer.send('main-window-progress-load')
-            infoStarting.innerHTML = "Lancement de Minecraft..."
+            infoStarting.innerHTML = "VOUS ÊTES EN JEU"
             console.log(e);
         });
 

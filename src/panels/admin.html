@@ -1,0 +1,164 @@
+<div class="container admin-page-container">
+
+    <!-- ── SIDEBAR (même que home) ──────────────────────────── -->
+    <nav class="sidebar-nav">
+        <div class="sidebar-logo clickable-logo" title="Retour à l'Accueil">
+            <img class="sidebar-icon-img" src="assets/images/icon/icon.png" alt="DE">
+            <div class="sidebar-logo-glow"></div>
+        </div>
+
+        <ul class="sidebar-links">
+            <li class="sidebar-item" id="admin-nav-home" title="Accueil">
+                <span class="sidebar-nav-icon icon-monitor"></span>
+            </li>
+            <li class="sidebar-item active-nav" id="admin-nav-admin" title="Espace Admin">
+                <span class="sidebar-nav-icon">&#128081;</span>
+            </li>
+        </ul>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-item settings-btn-admin" title="Paramètres">
+                <span class="sidebar-nav-icon icon-settings"></span>
+            </div>
+            <div class="sidebar-item sidebar-user-item" id="admin-nav-logout" title="Déconnexion">
+                <div class="sidebar-player-head admin-player-head" title="Déconnexion du compte"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── CONTENU PRINCIPAL STAFF ──────────────────────────── -->
+    <div class="admin-page-main">
+
+        <!-- TOP BAR -->
+        <header class="admin-page-topbar">
+            <div class="admin-page-topbar-left">
+                <span class="admin-page-badge">&#128081; ACCES STAFF</span>
+                <h1 class="admin-page-title">ESPACE ADMINISTRATION</h1>
+                <span class="admin-page-sub">Gestion Whitelist &middot; Staffs &middot; Annonces Live</span>
+            </div>
+            <div class="admin-page-topbar-right">
+                <div class="admin-stat-chip" title="Joueurs Whitelist">
+                    <span class="stat-icon">&#128104;</span>
+                    <span class="stat-val" id="ap-count-players">0</span>
+                    <span class="stat-label">JOUEURS</span>
+                </div>
+                <div class="admin-stat-chip admin-stat-staff" title="Membres du Staff">
+                    <span class="stat-icon">&#128081;</span>
+                    <span class="stat-val" id="ap-count-staffs">0</span>
+                    <span class="stat-label">STAFFS</span>
+                </div>
+                <button class="admin-page-back-btn" id="admin-page-back-btn" title="Retour a l'Accueil">&#8592; RETOUR</button>
+            </div>
+        </header>
+
+        <!-- BODY GRID -->
+        <div class="admin-page-body">
+
+            <!-- COL GAUCHE : Whitelist & Statut -->
+            <div class="admin-page-col">
+
+                <!-- Section Statut Serveur -->
+                <div class="ap-section">
+                    <div class="ap-section-header">
+                        <span class="ap-section-icon">&#9881;</span>
+                        <span class="ap-section-label">STATUT DU SERVEUR / WHITELIST</span>
+                    </div>
+                    <div class="ap-toggle-row">
+                        <div class="ap-toggle-info">
+                            <div class="ap-toggle-status-text" id="ap-wl-status-text">WHITELIST ACTIVEE</div>
+                            <div class="ap-toggle-hint">Activer/desactiver l'acces public au serveur</div>
+                        </div>
+                        <label class="switch-neon-wrapper">
+                            <input type="checkbox" id="ap-wl-checkbox" checked>
+                            <span class="switch-neon-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Section Annonce Flash -->
+                <div class="ap-section">
+                    <div class="ap-section-header">
+                        <span class="ap-section-icon">&#128226;</span>
+                        <span class="ap-section-label">MESSAGE D'ANNONCE FLASH (EN DIRECT)</span>
+                    </div>
+                    <div class="admin-input-group">
+                        <input type="text" id="ap-announce-input" class="admin-input" placeholder="Message urgent (ex: Evenement ce soir a 21h !)...">
+                        <button id="ap-publish-announce-btn" class="admin-action-btn">+ PUBLIER</button>
+                        <button id="ap-clear-announce-btn" class="admin-action-btn cancel-btn" style="display: none;">EFFACER</button>
+                    </div>
+                    <div class="ap-announce-preview" id="ap-announce-preview" style="display:none;">
+                        <span class="ap-announce-live-dot"></span>
+                        <span class="ap-announce-preview-text" id="ap-announce-preview-text"></span>
+                    </div>
+                </div>
+
+                <!-- Section Purge Cache -->
+                <div class="ap-section ap-section-tools">
+                    <div class="ap-section-header">
+                        <span class="ap-section-icon">&#128297;</span>
+                        <span class="ap-section-label">OUTILS DE MAINTENANCE</span>
+                    </div>
+                    <button id="ap-clear-cache-btn" class="admin-action-btn admin-btn-purge">
+                        &#129529; PURGER LE CACHE DU LAUNCHER
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- COL DROITE : Onglets Joueurs Whitelist & Staffs -->
+            <div class="admin-page-col admin-page-col-right">
+
+                <!-- En-tête des Onglets -->
+                <div class="ap-tabs-header">
+                    <button class="ap-tab-btn active-tab" id="ap-tab-players" type="button">
+                        <span class="tab-icon">&#128100;</span>
+                        <span class="tab-label">JOUEURS WHITELIST</span>
+                        <span class="tab-badge" id="ap-tab-count-players">0</span>
+                    </button>
+                    <button class="ap-tab-btn" id="ap-tab-staffs" type="button">
+                        <span class="tab-icon">&#128081;</span>
+                        <span class="tab-label">MEMBRES DU STAFF</span>
+                        <span class="tab-badge staff-tab-badge" id="ap-tab-count-staffs">0</span>
+                    </button>
+                </div>
+
+                <!-- Contenu Onglet 1 : Joueurs Whitelist -->
+                <div class="ap-tab-content active-tab-content" id="ap-tab-content-players">
+                    <div class="ap-section ap-section-list">
+                        <div class="ap-section-header">
+                            <span class="ap-section-icon">&#128100;</span>
+                            <span class="ap-section-label">LISTE DES JOUEURS WHITELISTÉS</span>
+                        </div>
+                        <div class="admin-input-group ap-search-bar">
+                            <input type="text" id="ap-search-player-input" class="admin-input search-input" placeholder="🔍 Rechercher un joueur dans la whitelist...">
+                        </div>
+                        <div class="admin-input-group">
+                            <input type="text" id="ap-player-input" class="admin-input" placeholder="Ajouter un pseudo Minecraft (ex: Player123)...">
+                            <button id="ap-add-player-btn" class="admin-action-btn">+ AJOUTER JOUEUR</button>
+                        </div>
+                        <div class="admin-tags-container content-scroll" id="ap-players-list"></div>
+                    </div>
+                </div>
+
+                <!-- Contenu Onglet 2 : Staffs -->
+                <div class="ap-tab-content" id="ap-tab-content-staffs" style="display: none;">
+                    <div class="ap-section ap-section-list">
+                        <div class="ap-section-header">
+                            <span class="ap-section-icon">&#128081;</span>
+                            <span class="ap-section-label">MEMBRES DU STAFF (ACCÈS PERMANENT)</span>
+                        </div>
+                        <div class="admin-input-group ap-search-bar">
+                            <input type="text" id="ap-search-staff-input" class="admin-input search-input" placeholder="🔍 Rechercher un membre du staff...">
+                        </div>
+                        <div class="admin-input-group">
+                            <input type="text" id="ap-staff-input" class="admin-input" placeholder="Ajouter un pseudo Staff (ex: AdminUser)...">
+                            <button id="ap-add-staff-btn" class="admin-action-btn admin-btn-staff">+ AJOUTER STAFF</button>
+                        </div>
+                        <div class="admin-tags-container content-scroll" id="ap-staffs-list"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
