@@ -1,6 +1,6 @@
 /* ============================================================
    login.css — Panel d'authentification
-   DestinEvent Launcher — Thriller/Horror Theme
+   DestinEvent Launcher — Reaper Ultra-Premium Theme
    ============================================================ */
 
 .login .container {
@@ -8,40 +8,33 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    /* Fond de la scène login : vignette rouge centrale */
-    background: radial-gradient(ellipse at 50% 80%, rgba(180, 24, 42, 0.1) 0%, transparent 65%);
+    background: radial-gradient(ellipse at 50% 80%, rgba(255, 30, 67, 0.15) 0%, transparent 70%);
 }
 
 /* ── Card de login ──────────────────────────────────────────── */
 
 .login-tabs {
     position: absolute;
-    padding: 32px 36px;
-    background: var(--bg-surface, #201D3F);
-    border-radius: 2px;
+    padding: 34px 38px;
+    background: var(--grad-glass);
+    backdrop-filter: blur(24px);
+    border-radius: var(--radius-card, 16px);
     text-align: center;
-    min-width: 380px;
-
-    /* Bordure rouge gauche — signature thriller */
-    border-left: 3px solid var(--red-primary, #B4182A);
-    border-top: 1px solid rgba(180, 24, 42, 0.2);
-    border-right: 1px solid rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-
+    min-width: 400px;
+    border: 1px solid rgba(255, 30, 67, 0.4);
     box-shadow:
-        -6px 0 24px rgba(180, 24, 42, 0.2),
-        0 24px 60px rgba(0, 0, 0, 0.8);
+        var(--glow-crimson),
+        0 24px 70px rgba(0, 0, 0, 0.95);
 }
 
-/* Ligne décorative rouge en haut de la card */
 .login-tabs::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -3px;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, var(--red-primary, #B4182A), transparent);
+    left: 15%;
+    right: 15%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #FF1E43, transparent);
 }
 
 .login-home,
@@ -54,61 +47,64 @@
 /* ── Titre de la card ───────────────────────────────────────── */
 
 .login-text {
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--text-primary, #EDEAE0);
+    color: var(--text-primary, #F7F5F0);
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(180, 24, 42, 0.2);
+    border-bottom: 1px solid rgba(255, 30, 67, 0.3);
+    text-shadow: 0 0 12px rgba(255, 30, 67, 0.4);
 }
 
 /* ── Options (boutons) ──────────────────────────────────────── */
 
 .login-options {
-    margin-top: 20px;
+    margin-top: 22px;
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 14px;
 }
 
 /* ── Boutons connect / cancel ───────────────────────────────── */
 
 .connect,
 .cancel {
-    background: none;
-    color: var(--text-primary, #EDEAE0);
-    border: 1px solid var(--red-primary, #B4182A);
-    border-radius: 2px;
-    padding: 0.5rem 2.8rem;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    background: var(--grad-ruby);
+    color: #FFF;
+    border: 1px solid rgba(255, 30, 67, 0.5);
+    border-radius: var(--radius-btn, 10px);
+    padding: 0.75rem 3rem;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-
-    /* Signature : trait rouge gauche */
-    box-shadow: -2px 0 0 var(--red-primary, #B4182A);
+    transition: all 0.25s ease;
+    box-shadow: 0 0 16px rgba(255, 30, 67, 0.35);
 }
 
 .connect:hover {
-    background-color: var(--red-primary, #B4182A);
-    box-shadow: -2px 0 0 var(--red-accent, #E0263A), 0 0 20px rgba(180, 24, 42, 0.4);
+    background: var(--grad-ruby-hover);
+    box-shadow: var(--glow-crimson-intense);
+    transform: translateY(-2px);
 }
 
 .cancel {
-    border-color: rgba(180, 24, 42, 0.35);
-    color: var(--text-muted, #9A9588);
-    box-shadow: -2px 0 0 rgba(180, 24, 42, 0.3);
+    background: rgba(18, 13, 31, 0.6);
+    border-color: rgba(255, 30, 67, 0.3);
+    color: rgba(184, 178, 166, 0.8);
+    box-shadow: none;
 }
 
 .cancel:hover {
-    background-color: rgba(180, 24, 42, 0.1);
-    color: var(--text-primary, #EDEAE0);
-    box-shadow: -2px 0 0 var(--red-primary, #B4182A);
+    background: rgba(255, 30, 67, 0.16);
+    border-color: #FF1E43;
+    color: #FFF;
+    box-shadow: 0 0 16px rgba(255, 30, 67, 0.3);
 }
 
 /* ── Champs de saisie ───────────────────────────────────────── */
@@ -117,39 +113,40 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 10px;
 }
 
 .input-login .email,
 .input-login .password,
 .A2F {
-    color: var(--text-primary, #EDEAE0);
-    background: rgba(13, 11, 31, 0.6);
+    color: var(--text-primary, #F7F5F0);
+    background: rgba(12, 9, 24, 0.65);
     border: none;
-    border-bottom: 1px solid rgba(180, 24, 42, 0.4);
-    border-radius: 0;
-    width: 80%;
-    padding: 0.55rem 0.8rem;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 400;
+    border-bottom: 1.5px solid rgba(255, 30, 67, 0.4);
+    border-radius: 4px 4px 0 0;
+    width: 84%;
+    padding: 0.65rem 0.9rem;
+    font-family: var(--font-body, 'Outfit', sans-serif);
+    font-size: 0.88rem;
+    font-weight: 500;
     letter-spacing: 0.04em;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .input-login .email::placeholder,
 .input-login .password::placeholder,
 .A2F::placeholder {
-    color: var(--text-dim, #5C5850);
-    font-size: 0.78rem;
+    color: rgba(184, 178, 166, 0.6);
+    font-size: 0.8rem;
     letter-spacing: 0.06em;
 }
 
 .input-login .email:focus,
 .input-login .password:focus,
 .A2F:focus {
-    background: rgba(26, 22, 51, 0.8);
-    border-bottom-color: var(--red-accent, #E0263A);
+    background: rgba(20, 14, 38, 0.85);
+    border-bottom-color: #FF1E43;
+    box-shadow: 0 4px 14px rgba(255, 30, 67, 0.25);
     outline: none;
 }

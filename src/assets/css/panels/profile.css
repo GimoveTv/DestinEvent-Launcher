@@ -1,6 +1,6 @@
 /* ============================================================
    profile.css — Page Dédiée Espace Joueur
-   DestinEvent Launcher
+   DestinEvent Launcher — Reaper Ultra-Premium Theme
    ============================================================ */
 
 .profile {
@@ -15,33 +15,34 @@
     height: 100%;
     background: transparent;
     position: relative;
-    padding-top: 26px;
+    padding-top: 32px;
     box-sizing: border-box;
 }
 
 .profile-page-content {
     flex: 1;
-    height: calc(100% - 26px);
+    height: calc(100% - 32px);
     display: flex;
     flex-direction: column;
     padding: 16px 32px 24px 32px;
     box-sizing: border-box;
     overflow-y: auto;
-    gap: 16px;
+    gap: 18px;
 }
 
 .profile-page-content::-webkit-scrollbar {
-    width: 3px;
+    width: 5px;
 }
 .profile-page-content::-webkit-scrollbar-thumb {
-    background: #B4182A;
+    background: linear-gradient(180deg, #FF1E43, #8A0A1A);
+    border-radius: 6px;
 }
 
 /* Enveloppe centrale équilibrée */
 .profile-center-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
     margin-top: 8px;
     width: 100%;
 }
@@ -52,41 +53,35 @@
 
 .espace-joueur-hero-card {
     width: 100%;
-    height: 130px;
-    border-radius: 2px;
+    height: 135px;
+    border-radius: var(--radius-card, 14px);
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
-    padding: 0 28px;
+    padding: 0 30px;
     box-sizing: border-box;
 
-    background-color: rgba(21, 18, 43, 0.75);
-    backdrop-filter: blur(10px);
-    background-image:
-        radial-gradient(ellipse at 85% 50%, rgba(180, 24, 42, 0.3) 0%, transparent 65%),
-        linear-gradient(135deg, rgba(8, 6, 18, 0.9) 0%, rgba(31, 26, 58, 0.8) 100%);
-    border-left: 4px solid #B4182A;
-    border-top: 1px solid rgba(180, 24, 42, 0.3);
-    border-right: 1px solid rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+    background: var(--grad-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 30, 67, 0.35);
+    box-shadow: var(--shadow-card), var(--glow-crimson);
 }
 
 .player-profile-main {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 24px;
     z-index: 2;
 }
 
 .player-avatar-glow-box {
     position: relative;
-    width: 72px;
-    height: 72px;
-    border-radius: 2px;
-    border: 1px solid rgba(224, 38, 58, 0.6);
-    box-shadow: 0 0 24px rgba(180, 24, 42, 0.45);
+    width: 76px;
+    height: 76px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255, 30, 67, 0.6);
+    box-shadow: 0 0 30px rgba(255, 30, 67, 0.45);
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -101,7 +96,7 @@
 .avatar-ring {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    box-shadow: inset 0 0 12px rgba(224, 38, 58, 0.4);
+    box-shadow: inset 0 0 14px rgba(255, 30, 67, 0.4);
     pointer-events: none;
 }
 
@@ -112,19 +107,21 @@
 }
 
 .player-subtitle {
-    font-size: 0.65rem;
+    font-family: var(--font-subheading, 'Rajdhani', sans-serif);
+    font-size: 0.68rem;
     font-weight: 800;
-    letter-spacing: 0.25em;
-    color: #E0263A;
+    letter-spacing: 0.28em;
+    color: #FF1E43;
     text-transform: uppercase;
 }
 
 .profile-pseudo-display {
-    font-size: 1.9rem;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 2rem;
     font-weight: 900;
     letter-spacing: 0.08em;
-    color: #EDEAE0;
-    text-shadow: 0 0 16px rgba(180, 24, 42, 0.5);
+    color: var(--text-primary, #F7F5F0);
+    text-shadow: 0 0 20px rgba(255, 30, 67, 0.5);
     margin: 0;
     line-height: 1.1;
 }
@@ -133,27 +130,29 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
 .role-tag {
-    font-size: 0.68rem;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 0.65rem;
     font-weight: 800;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 2px;
+    padding: 4px 12px;
+    border-radius: var(--radius-badge, 6px);
 }
 
 .tag-role {
-    background: rgba(180, 24, 42, 0.25);
-    color: #EDEAE0;
-    border: 1px solid rgba(224, 38, 58, 0.4);
+    background: rgba(255, 30, 67, 0.22);
+    color: var(--text-primary, #F7F5F0);
+    border: 1px solid rgba(255, 30, 67, 0.45);
+    box-shadow: 0 0 12px rgba(255, 30, 67, 0.25);
 }
 
 .tag-session {
-    background: rgba(255, 255, 255, 0.05);
-    color: #9A9588;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(184, 178, 166, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -169,64 +168,66 @@
 }
 
 .player-stat-card {
-    background: rgba(31, 26, 58, 0.65);
-    backdrop-filter: blur(8px);
-    padding: 16px 20px;
-    border-radius: 2px;
-    border-left: 3px solid #B4182A;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    border-right: 1px solid rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    background: var(--grad-card);
+    backdrop-filter: blur(16px);
+    padding: 18px 22px;
+    border-radius: var(--radius-card, 14px);
+    border-left: 4px solid #FF1E43;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+    box-shadow: var(--shadow-glass);
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    transition: all 0.2s ease;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .player-stat-card:hover {
-    background: rgba(31, 26, 58, 0.85);
-    border-left-color: #E0263A;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(180, 24, 42, 0.25);
+    background: var(--grad-card-hover);
+    border-left-color: #FF5270;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(255, 30, 67, 0.25);
 }
 
 .stat-card-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .stat-card-icon {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
 }
 
-.heart-glow { color: #E0263A; text-shadow: 0 0 8px rgba(224, 38, 58, 0.6); }
-.shield-glow { color: #3DBF6E; text-shadow: 0 0 8px rgba(61, 191, 110, 0.6); }
-.key-glow { color: #FF9F43; text-shadow: 0 0 8px rgba(255, 159, 67, 0.6); }
+.heart-glow { color: #FF1E43; text-shadow: 0 0 10px rgba(255, 30, 67, 0.7); }
+.shield-glow { color: #3DBF6E; text-shadow: 0 0 10px rgba(61, 191, 110, 0.7); }
+.key-glow { color: #FF9F43; text-shadow: 0 0 10px rgba(255, 159, 67, 0.7); }
 
 .stat-card-title {
-    font-size: 0.62rem;
+    font-family: var(--font-subheading, 'Rajdhani', sans-serif);
+    font-size: 0.68rem;
     font-weight: 800;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #5C5850;
+    color: rgba(184, 178, 166, 0.75);
 }
 
 .stat-card-value {
-    font-size: 1.35rem;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 1.45rem;
     font-weight: 900;
     letter-spacing: 0.05em;
 }
 
-.text-red { color: #E0263A; }
+.text-red { color: #FF1E43; }
 .text-green { color: #3DBF6E; }
 .text-yellow { color: #FF9F43; }
 
 .stat-card-sub {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    color: #9A9588;
+    color: rgba(184, 178, 166, 0.85);
     letter-spacing: 0.05em;
 }
 
@@ -235,60 +236,91 @@
    ============================================================= */
 
 .account-details-panel {
-    background: rgba(13, 11, 31, 0.45);
-    backdrop-filter: blur(8px);
-    border-radius: 2px;
-    border: 1px solid rgba(180, 24, 42, 0.2);
-    padding: 16px 20px;
+    background: var(--grad-card);
+    backdrop-filter: blur(16px);
+    border-radius: var(--radius-card, 14px);
+    border: 1px solid rgba(255, 30, 67, 0.25);
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+    box-shadow: var(--shadow-glass);
 }
 
 .details-panel-header {
-    border-bottom: 1px solid rgba(180, 24, 42, 0.25);
-    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 30, 67, 0.25);
+    padding-bottom: 10px;
 }
 
 .details-panel-title {
-    font-size: 0.75rem;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 0.82rem;
     font-weight: 900;
-    letter-spacing: 0.22em;
-    color: #E0263A;
+    letter-spacing: 0.25em;
+    color: #FF1E43;
     text-transform: uppercase;
-    text-shadow: 0 0 10px rgba(224, 38, 58, 0.3);
+    text-shadow: 0 0 12px rgba(255, 30, 67, 0.4);
 }
 
 .details-single-row {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
     width: 100%;
 }
 
 .single-pseudo-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    background: rgba(31, 26, 58, 0.6);
-    padding: 14px 18px;
-    border-radius: 2px;
-    border-left: 3px solid #B4182A;
+    gap: 6px;
+    background: rgba(18, 13, 31, 0.65);
+    padding: 16px 20px;
+    border-radius: var(--radius-btn, 10px);
+    border-left: 4px solid #FF1E43;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     border-right: 1px solid rgba(255, 255, 255, 0.04);
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-    width: 100%;
+    flex: 1;
+}
+
+.profile-logout-btn {
+    background: var(--grad-ruby);
+    border: 1px solid rgba(255, 30, 67, 0.5);
+    color: #FFF;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    padding: 16px 28px;
+    border-radius: var(--radius-btn, 10px);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 16px rgba(255, 30, 67, 0.3);
+}
+
+.profile-logout-btn:hover {
+    background: var(--grad-ruby-hover);
+    color: #FFF;
+    box-shadow: var(--glow-crimson-intense);
+    transform: translateY(-2px);
 }
 
 .detail-label {
-    font-size: 0.6rem;
+    font-family: var(--font-subheading, 'Rajdhani', sans-serif);
+    font-size: 0.65rem;
     font-weight: 800;
-    letter-spacing: 0.18em;
-    color: #5C5850;
+    letter-spacing: 0.2em;
+    color: rgba(184, 178, 166, 0.75);
     text-transform: uppercase;
 }
 
 .detail-val {
-    font-size: 1.1rem;
+    font-family: var(--font-heading, 'Orbitron', sans-serif);
+    font-size: 1.15rem;
     font-weight: 900;
-    color: #EDEAE0;
+    color: var(--text-primary, #F7F5F0);
     letter-spacing: 0.05em;
 }
+

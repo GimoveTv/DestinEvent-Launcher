@@ -40,12 +40,15 @@ async function setBackground(theme) {
 
 async function changePanel(id) {
     let panel = document.querySelector(`.${id}`);
-    let active = document.querySelector(`.active`)
+    let active = document.querySelector(`.active`);
     if (active) active.classList.toggle("active");
     if (panel) panel.classList.add("active");
 
     if (id === 'profile' && window.profileInstance) {
         window.profileInstance.loadProfile();
+    }
+    if (id === 'settings' && window.settingsInstance) {
+        window.settingsInstance.loadAccounts();
     }
 }
 
@@ -55,7 +58,13 @@ async function appdata() {
 
 async function addAccount(data) {
     let skin = false
-    if (data?.profile?.skins[0]?.base64) skin = await new skin2D().creatHeadTexture(data.profile.skins[0].base64);
+    if (data?.profile?.skins[0]?.base64) {
+        skin = await new skin2D().creatHeadTexture(data.profile.skins[0].base64);
+    } else if (data?.name) {
+        try {
+            skin = await new skin2D().creatHeadTexture(`https://minotar.net/skin/${data.name}`);
+        } catch (e) {}
+    }
     let div = document.createElement("div");
     div.classList.add("account");
     div.id = data.ID;
@@ -63,9 +72,9 @@ async function addAccount(data) {
         <div class="profile-image" ${skin ? 'style="background-image: url(' + skin + ');"' : ''}></div>
         <div class="profile-infos">
             <div class="profile-pseudo">${data.name}</div>
-            <div class="profile-uuid">${data.uuid}</div>
+            <div class="profile-uuid">${data.uuid || data.ID}</div>
         </div>
-        <div class="delete-profile" id="${data.ID}">
+        <div class="delete-profile" data-id="${data.ID}" id="${data.ID}" title="Se déconnecter">
             <div class="icon-account-delete delete-profile-icon"></div>
         </div>
     `
@@ -107,6 +116,8 @@ async function headplayer(skinBase64) {
         heads.forEach(h => h.style.backgroundImage = `url(${skin})`);
     } catch (err) {
         console.error('Error generating head player texture:', err);
+        let heads = document.querySelectorAll('.player-head, .profile-player-head');
+        heads.forEach(h => h.style.backgroundImage = `url(assets/images/default/setve.png)`);
     }
 }
 

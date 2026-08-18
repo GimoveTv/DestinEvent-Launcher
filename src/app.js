@@ -3,7 +3,7 @@
  * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
  */
 
-const { app, ipcMain, nativeTheme } = require('electron');
+const { app, ipcMain, nativeTheme, session } = require('electron');
 const { Microsoft } = require('minecraft-java-core');
 const { autoUpdater } = require('electron-updater')
 
@@ -113,7 +113,20 @@ ipcMain.on('main-window-show', () => {
 });
 
 ipcMain.handle('Microsoft-window', async (_, client_id) => {
-    return await new Microsoft(client_id).getAuth();
+    try {
+        if (session.defaultSession) {
+            await session.defaultSession.clearStorageData({
+                storages: ['appcache', 'cookies', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage']
+            });
+            await session.defaultSession.clearCache();
+            await session.defaultSession.clearAuthCache();
+        }
+    } catch (e) {
+        console.error('Error clearing session storage:', e);
+    }
+    const ms = new Microsoft(client_id);
+    const loginUrl = `https://login.live.com/oauth20_authorize.srf?client_id=${client_id || '00000000402b5328'}&response_type=code&redirect_uri=https://login.live.com/oauth20_desktop.srf&scope=XboxLive.signin%20offline_access&prompt=login`;
+    return await ms.getAuth('electron', loginUrl);
 })
 
 ipcMain.handle('is-dark-theme', (_, theme) => {

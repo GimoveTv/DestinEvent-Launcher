@@ -2,7 +2,7 @@
  * @author Luuxis
  * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
  */
-import { changePanel, database, config, skin2D } from '../utils.js'
+import { changePanel, database, config, skin2D, popup, accountSelect } from '../utils.js'
 
 class Profile {
     static id = "profile";
@@ -25,6 +25,48 @@ class Profile {
         let settingsBtn = document.querySelector('.profile-settings-btn');
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => changePanel('settings'));
+        }
+
+        let logoutBtn = document.querySelector('#profile-logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                let popupAccount = new popup();
+                try {
+                    popupAccount.openPopup({
+                        title: 'Déconnexion',
+                        content: 'Déconnexion en cours...',
+                        color: 'var(--color)'
+                    });
+
+                    let configClient = await this.db.readData('configClient');
+                    let currentId = configClient ? configClient.account_selected : null;
+
+                    if (currentId) {
+                        await this.db.deleteData('accounts', currentId);
+                        let accountElem = document.getElementById(`${currentId}`);
+                        if (accountElem) accountElem.remove();
+                    }
+
+                    let allAccounts = await this.db.readAllData('accounts');
+
+                    if (!allAccounts || allAccounts.length === 0) {
+                        if (configClient) {
+                            configClient.account_selected = null;
+                            await this.db.updateData('configClient', configClient);
+                        }
+                        return changePanel('login');
+                    } else {
+                        configClient.account_selected = allAccounts[0].ID;
+                        await accountSelect(allAccounts[0]);
+                        await this.db.updateData('configClient', configClient);
+                        await this.loadProfile();
+                    }
+                } catch (err) {
+                    console.error('Logout error:', err);
+                } finally {
+                    popupAccount.closePopup();
+                }
+            });
         }
     }
 

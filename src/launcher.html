@@ -4,40 +4,50 @@
         <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
         <link rel="stylesheet" href="assets/css/launcher.css">
     </head>
-    <body>
-        <!-- Vidéo d'Arrière-Plan Globale sur Toute la Fenêtre -->
-        <div class="global-bg-wrapper">
-            <video id="global-bg-video" class="global-bg-video" autoplay loop playsinline src="assets/video/hero.mp4"></video>
-            <div class="global-bg-overlay"></div>
-        </div>
+    <body class="reaper-frame">
+        <!-- Fenêtre Globale Découpée en Silhouette Faucheuse -->
+        <div id="app-window" class="app-window">
+            <!-- Ornements de Coins : Lames et Dagues de la Faucheuse -->
+            <div class="corner-blade corner-tl"></div>
+            <div class="corner-blade corner-tr"></div>
+            <div class="corner-blade corner-bl"></div>
+            <div class="corner-blade corner-br"></div>
 
-        <div class="dragbar"></div>
-        <div class="darwin">
-            <div class="frame">
-                <div id="close" class="button-frame darwin-icon-close"></div>
-                <div id="minimize" class="button-frame darwin-icon-minimize"></div>
-                <div id="maximize" class="button-frame darwin-icon-maximize"></div>
-
+            <!-- Vidéo d'Arrière-Plan Globale -->
+            <div class="global-bg-wrapper">
+                <video id="global-bg-video" class="global-bg-video" autoplay loop playsinline src="assets/video/hero.mp4"></video>
+                <div class="global-bg-overlay"></div>
             </div>
-        </div>
-        <div class="other">
-            <div class="frame">
-                <div id="minimize" class="button-frame icon-minimize"></div>
-                <div id="maximize" class="button-frame icon-maximize"></div>
-                <div id="close" class="button-frame icon-close"></div>
-            </div>
-        </div>
 
-        <div class="popup">
-            <div class="popup-tab">
-                <div class="popup-title"></div>
-                <div class="popup-content"></div>
-                <div class="popup-options">
-                    <button class="popup-button">OK</button>
+            <div class="dragbar">
+                <div class="dragbar-title"><span class="reaper-skull-icon">☠</span> DESTINEVENT</div>
+            </div>
+            <div class="darwin">
+                <div class="frame">
+                    <div id="close" class="button-frame darwin-icon-close"></div>
+                    <div id="minimize" class="button-frame darwin-icon-minimize"></div>
+                    <div id="maximize" class="button-frame darwin-icon-maximize"></div>
                 </div>
             </div>
+            <div class="other">
+                <div class="frame">
+                    <div id="minimize" class="button-frame icon-minimize"></div>
+                    <div id="maximize" class="button-frame icon-maximize"></div>
+                    <div id="close" class="button-frame icon-close"></div>
+                </div>
+            </div>
+
+            <div class="popup">
+                <div class="popup-tab">
+                    <div class="popup-title"></div>
+                    <div class="popup-content"></div>
+                    <div class="popup-options">
+                        <button class="popup-button">OK</button>
+                    </div>
+                </div>
+            </div>
+            <div class="panels"></div>
         </div>
-        <div class="panels"></div>
         <script src="assets/js/launcher.js" type="module"></script>
     </body>
 </html>

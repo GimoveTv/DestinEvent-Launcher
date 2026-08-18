@@ -3,7 +3,7 @@
  * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
  */
 
-import { changePanel, accountSelect, database, Slider, config, setStatus, popup, appdata, setBackground } from '../utils.js'
+import { changePanel, accountSelect, addAccount, database, Slider, config, setStatus, popup, appdata, setBackground } from '../utils.js'
 const { ipcRenderer } = require('electron');
 const os = require('os');
 
@@ -12,12 +12,41 @@ class Settings {
     async init(config) {
         this.config = config;
         this.db = new database();
-        this.navBTN()
-        this.accounts()
-        this.ram()
-        this.javaPath()
-        this.resolution()
-        this.launcher()
+        window.settingsInstance = this;
+        this.navBTN();
+        this.accounts();
+        await this.loadAccounts();
+        this.ram();
+        this.javaPath();
+        this.resolution();
+        this.launcher();
+    }
+
+    async loadAccounts() {
+        let accountsList = document.querySelector('.accounts-list');
+        if (!accountsList) return;
+        accountsList.innerHTML = '';
+        let accounts = await this.db.readAllData('accounts');
+        let configClient = await this.db.readData('configClient');
+        let selectedId = configClient ? configClient.account_selected : null;
+
+        if (Array.isArray(accounts)) {
+            let seenKeys = new Set();
+            for (let acc of accounts) {
+                let key = `${acc?.name}_${acc?.uuid || acc?.ID}`;
+                if (acc && acc.name && acc.name !== 'undefined' && !seenKeys.has(key)) {
+                    seenKeys.add(key);
+                    await addAccount(acc);
+                } else if (acc) {
+                    await this.db.deleteData('accounts', acc.ID);
+                }
+            }
+        }
+
+        if (selectedId) {
+            let activeElem = document.getElementById(`${selectedId}`);
+            if (activeElem) activeElem.classList.add('account-select');
+        }
     }
 
     navBTN() {
@@ -48,75 +77,106 @@ class Settings {
 
     accounts() {
         document.querySelector('.accounts-list').addEventListener('click', async e => {
-            let popupAccount = new popup()
+            let popupAccount = new popup();
             try {
-                let id = e.target.id
-                if (e.target.classList.contains('account')) {
-                    if (id == 'add') return;
+                let deleteBtn = e.target.closest('.delete-profile');
+                let accountElem = e.target.closest('.account');
 
+                if (deleteBtn) {
+                    let id = parseInt(deleteBtn.dataset.id || deleteBtn.id || (accountElem ? accountElem.id : null));
                     popupAccount.openPopup({
-                        title: 'Connexion',
-                        content: 'Veuillez patienter...',
+                        title: 'Déconnexion',
+                        content: 'Suppression du compte...',
                         color: 'var(--color)'
-                    })
+                    });
 
-                    let account = await this.db.readData('accounts', id);
-                    let configClient = await this.setInstance(account);
-                    await accountSelect(account);
-                    configClient.account_selected = account.ID;
-                    return await this.db.updateData('configClient', configClient);
-                }
-
-                if (e.target.classList.contains("delete-profile")) {
-                    popupAccount.openPopup({
-                        title: 'Connexion',
-                        content: 'Veuillez patienter...',
-                        color: 'var(--color)'
-                    })
                     await this.db.deleteData('accounts', id);
-                    let deleteProfile = document.getElementById(`${id}`);
-                    let accountListElement = document.querySelector('.accounts-list');
-                    accountListElement.removeChild(deleteProfile);
 
-                    if (accountListElement.children.length == 1) return changePanel('login');
-
+                    let allAccounts = await this.db.readAllData('accounts');
                     let configClient = await this.db.readData('configClient');
 
-                    if (configClient.account_selected == id) {
-                        let allAccounts = await this.db.readAllData('accounts');
-                        configClient.account_selected = allAccounts[0].ID
-                        accountSelect(allAccounts[0]);
-                        let newInstanceSelect = await this.setInstance(allAccounts[0]);
-                        configClient.instance_select = newInstanceSelect.instance_select
-                        return await this.db.updateData('configClient', configClient);
+                    if (!allAccounts || allAccounts.length === 0) {
+                        if (configClient) {
+                            configClient.account_selected = null;
+                            await this.db.updateData('configClient', configClient);
+                        }
+                        await this.loadAccounts();
+                        return changePanel('login');
+                    }
+
+                    if (configClient && (configClient.account_selected == id || !configClient.account_selected)) {
+                        configClient.account_selected = allAccounts[0].ID;
+                        await accountSelect(allAccounts[0]);
+                        let updatedConfig = await this.setInstance(allAccounts[0]);
+                        if (updatedConfig) {
+                            updatedConfig.account_selected = allAccounts[0].ID;
+                            await this.db.updateData('configClient', updatedConfig);
+                        }
+                    }
+                    await this.loadAccounts();
+                    return;
+                }
+
+                if (accountElem) {
+                    let id = parseInt(accountElem.id);
+                    if (accountElem.classList.contains('add')) return;
+
+                    popupAccount.openPopup({
+                        title: 'Connexion',
+                        content: 'Veuillez patienter...',
+                        color: 'var(--color)'
+                    });
+
+                    let account = await this.db.readData('accounts', id);
+                    if (account) {
+                        let updatedConfig = await this.setInstance(account);
+                        await accountSelect(account);
+                        if (updatedConfig) {
+                            updatedConfig.account_selected = account.ID;
+                            await this.db.updateData('configClient', updatedConfig);
+                        }
+                        await this.loadAccounts();
                     }
                 }
             } catch (err) {
-                console.error(err)
+                console.error('Error handling account action:', err);
             } finally {
                 popupAccount.closePopup();
             }
-        })
+        });
     }
 
     async setInstance(auth) {
-        let configClient = await this.db.readData('configClient')
-        let instanceSelect = configClient.instance_select
-        let instancesList = await config.getInstanceList()
+        let configClient = await this.db.readData('configClient');
+        if (!configClient) {
+            configClient = {
+                account_selected: null,
+                instance_select: null,
+                java_config: { java_path: null, java_memory: { min: 2, max: 4 } },
+                game_config: { screen_size: { width: 854, height: 480 } },
+                launcher_config: { download_multi: 5, theme: 'auto', closeLauncher: 'close-launcher', intelEnabledMac: true }
+            };
+        }
+        let instanceSelect = configClient.instance_select;
+        let instancesList = await config.getInstanceList().catch(() => []);
 
-        for (let instance of instancesList) {
-            if (instance.whitelistActive) {
-                let whitelist = instance.whitelist.find(whitelist => whitelist == auth.name)
-                if (whitelist !== auth.name) {
-                    if (instance.name == instanceSelect) {
-                        let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-                        configClient.instance_select = newInstanceSelect.name
-                        await setStatus(newInstanceSelect.status)
+        if (Array.isArray(instancesList) && auth?.name) {
+            for (let instance of instancesList) {
+                if (instance.whitelistActive) {
+                    let whitelist = instance.whitelist ? instance.whitelist.find(w => w == auth.name) : null;
+                    if (whitelist !== auth.name) {
+                        if (instance.name == instanceSelect) {
+                            let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
+                            if (newInstanceSelect) {
+                                configClient.instance_select = newInstanceSelect.name;
+                                await setStatus(newInstanceSelect.status);
+                            }
+                        }
                     }
                 }
             }
         }
-        return configClient
+        return configClient;
     }
 
     async ram() {

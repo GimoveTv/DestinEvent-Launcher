@@ -47,10 +47,11 @@ class database {
         return data;
     }
 
-    async readData(tableName, key = 1) {
+    async readData(tableName, key) {
         await this.initStore();
+        if (key === undefined || key === null) return undefined;
         let tableData = this.store.get(tableName, []);
-        let data = tableData.find(item => item.ID === key);
+        let data = tableData.find(item => item.ID == key);
         return data ? data : undefined;
     }
 
@@ -62,7 +63,7 @@ class database {
     async updateData(tableName, data, key = 1) {
         await this.initStore();
         let tableData = this.store.get(tableName, []);
-        const index = tableData.findIndex(item => item.ID === key);
+        const index = tableData.findIndex(item => item.ID == key);
 
         if (index !== -1) {
             data.ID = key;
@@ -78,7 +79,7 @@ class database {
     async deleteData(tableName, key = 1) {
         await this.initStore();
         let tableData = this.store.get(tableName, []);
-        tableData = tableData.filter(item => item.ID !== key);
+        tableData = tableData.filter(item => item.ID != key);
         this.store.set(tableName, tableData);
     }
 

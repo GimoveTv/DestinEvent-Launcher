@@ -20,7 +20,7 @@ class Login {
                 this.getAZauth();
             }
         }
-        
+
         document.querySelector('.cancel-home').addEventListener('click', () => {
             document.querySelector('.cancel-home').style.display = 'none'
             changePanel('settings')
@@ -193,26 +193,39 @@ class Login {
 
     async saveData(connectionData) {
         let configClient = await this.db.readData('configClient');
-        let account = await this.db.createData('accounts', connectionData)
-        let instanceSelect = configClient.instance_select
-        let instancesList = await config.getInstanceList()
+        if (!configClient) {
+            configClient = {
+                account_selected: null,
+                instance_select: null,
+                java_config: { java_path: null, java_memory: { min: 2, max: 4 } },
+                game_config: { screen_size: { width: 854, height: 480 } },
+                launcher_config: { download_multi: 5, theme: 'auto', closeLauncher: 'close-launcher', intelEnabledMac: true }
+            };
+        }
+        let account = await this.db.createData('accounts', connectionData);
+        let instanceSelect = configClient.instance_select;
+        let instancesList = await config.getInstanceList().catch(() => []);
         configClient.account_selected = account.ID;
 
-        for (let instance of instancesList) {
-            if (instance.whitelistActive) {
-                let whitelist = instance.whitelist.find(whitelist => whitelist == account.name)
-                if (whitelist !== account.name) {
-                    if (instance.name == instanceSelect) {
-                        let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-                        configClient.instance_select = newInstanceSelect.name
-                        await setStatus(newInstanceSelect.status)
+        if (Array.isArray(instancesList) && account?.name) {
+            for (let instance of instancesList) {
+                if (instance.whitelistActive) {
+                    let whitelist = instance.whitelist ? instance.whitelist.find(w => w == account.name) : null;
+                    if (whitelist !== account.name) {
+                        if (instance.name == instanceSelect) {
+                            let newInstanceSelect = instancesList.find(i => i.whitelistActive == false) || instancesList[0];
+                            if (newInstanceSelect) {
+                                configClient.instance_select = newInstanceSelect.name;
+                                await setStatus(newInstanceSelect.status);
+                            }
+                        }
                     }
                 }
             }
         }
 
         await this.db.updateData('configClient', configClient);
-        await addAccount(account);
+        if (window.settingsInstance) await window.settingsInstance.loadAccounts();
         await accountSelect(account);
         changePanel('home');
     }
